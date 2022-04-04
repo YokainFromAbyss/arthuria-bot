@@ -10,6 +10,7 @@ from discord.ext import commands
 import random
 from discord import guild
 from discord import mentions
+import json
 
 PREFIX = ('>')
 bot= commands.Bot(command_prefix=PREFIX, description='Hi')
@@ -23,20 +24,62 @@ async def on_ready():
     await sleep (60)
     await bot.change_presence(status=discord.Status.online, activity=discord.Game(name="Горнило", type=3))
     await sleep (60)
+    await bot.change_presence(status=discord.Status.online, activity=discord.Game(name="Испытания Осириса", type=3))
+    await sleep (60)
+    await bot.change_presence(status=discord.Status.online, activity=discord.Game(name="Железное Знамя", type=3))
+    await sleep (60)
     await bot.change_presence(status=discord.Status.online, activity=discord.Game(name="Genshin Impact", type=3))
     await sleep (60)
-    await bot.change_presence(status=discord.Status.online, activity=discord.Game(name="Догони меня кирпич", type=3))
+    await bot.change_presence(status=discord.Status.online, activity=discord.Game(name="версия 0.0.2alpha", type=3))
     await sleep (60)
 print("Артурия готова!")
 
 #КОМАНДЫ
 # помощь
+# @bot.command()
+# async def помощь(json):
+#   const lib = require('lib')({token: process.env.STDLIB_SECRET_TOKEN});
+#   await lib.discord.channels['@0.3.0'].messages.create(
+#     {
+#       "channel_id": `${context.params.event.channel_id}`,
+#       "content": "",
+#       "tts": false,
+#       "embeds": [
+#     {
+#       "type": "rich",
+#       "title": `Привет, я Артурия из клана TITAWIN!`,
+#       "description": `Мой префикс: `>`.,
+#       "color": 0xfdf5cd,
+#       "fields": [
+#         {
+#           "name": `Команда`,
+#           "value": `---\n\`помощь\`\n\n\`ссылки\`\n\n\`да\`\n\n\`нет\`\n\n\`ударить\``,
+#           "inline": true
+#         },
+#         {
+#           "name": `Действие`,
+#           "value": `---\nполный список команд бота\n\nотправлю в ЛС ссылки на bungie.net и Discord Титавина\n\nшуточный ответ на \"да\"\n\nшуточный ответ на \"нет\"\n\nупоминает участника с описанием действия`,
+#           "inline": true
+#         }
+#       ],
+#       "thumbnail": {
+#         "url": `https://sun9-50.userapi.com/impf/QS-RWZcjQa_A_N_Z1IQh0qjy6BRD2-AFQE81mw/I6_jMI6io_Y.jpg?size=286x282&quality=95&sign=fd83f4890ff6ea18e1da9de57c1eccaf&type=album`,
+#         "height": 0,
+#         "width": 0
+#       },
+#       "footer": {
+#         "text": `---\nРазработчик бота: YokainFromAbyss#2300`
+#       }
+#     }
+#   ]
+# });
+
 @bot.command()
-async def помощь(ctx):
-  emb = discord.Embed(colour=discord.Colour.blue(),title='Префикс бота: >')
-  emb.set_thumbnail(url="https://telegra.ph/file/8593bb2489b650090b39b.png")
-  emb.set_footer(text='Список команд:\n>помощь\n>префикс\n>версия\n>ссылки\n>да\n>нет\n>ударить\n')
-  await ctx.author.send(embed=emb)
+async def помощь(ctx): 
+    embed=discord.Embed(title="Привет, я Артурия из клана TITAWIN!", description="Мой префикс: `>`.\n\n Моя версия на данный момент `0.0.2alpha`", colour=discord.Colour.blue())
+    embed.set_thumbnail(url="https://telegra.ph/file/14f906d4ad15ba4ccc001.png")
+    embed.add_field(name="Команды", value="```>помощь - полный список команд бота\n\n>ссылки - отправлю в ЛС ссылки на наш клан\n\n>да - шуточный ответ на \"Да\"\n\n>нет - шуточный ответ на \"Нет\"\n\n>ударить - упоминает участника с описанием действия```", inline=True)
+    await ctx.author.send(embed=embed)
 
 # ссылки
 @bot.command()
@@ -57,8 +100,8 @@ async def префикс(ctx):
 
 # версия
 @bot.command()
-async def версия(ctx):
-  await ctx.send('Версия бота: 0.0.2b')
+async def бот(ctx):
+  await ctx.send('Автор бота - <@178517568305364992>, Версия бота: 0.0.2b от 1.04.2022. Выражаю благодарность создателю бота [Indeedstor](https://top.gg/bot/677145368894373965) за вдохновение и желание впервые сделать своего бота.')
 
 # нет
 @bot.command()
@@ -81,87 +124,12 @@ async def ударить(ctx, member: discord.Member = None):
   arg6 = f"{ctx.author.mention} засовывет снежок в воротник {member.mention}."
   arg7 = f"{ctx.author.mention} дает поджопник {member.mention}."
   arg8 = f"{ctx.author.mention} дает щелбан {member.mention}."
-  test_list = [arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8]
+  arg9 = f"{ctx.author.mention} шепчет на ушко {member.mention} \"Чувствуешь пальчик в жопе? А ручки-то мои у тебя на шее\" :)"
+  arg10 = f"{ctx.author.mention} пытается вызвать чуму у {member.mention}, но тут же начинает чихать."
+  test_list = [arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9, arg10]
   if member == None:
       return
   await ctx.channel.send(random.choice(test_list))
-
-class MyClient(discord.Client):
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-
-        self.role_message_id = 960279710754021437  # ID of the message that can be reacted to to add/remove a role.
-        self.emoji_to_role = {
-            discord.PartialEmoji(name=':green_circle:'): ,  # ID of the role associated with unicode emoji '🔴'.
-            discord.PartialEmoji(name=':red_circle:'): ,  # ID of the role associated with unicode emoji '🟡'.
-            discord.PartialEmoji(name=':purple_circle:'): ,  # ID of the role associated with a partial emoji's ID.
-        }
-
-    async def on_raw_reaction_add(self, payload: discord.RawReactionActionEvent):
-        """Gives a role based on a reaction emoji."""
-        # Make sure that the message the user is reacting to is the one we care about.
-        if payload.message_id != self.role_message_id:
-            return
-
-        guild = self.get_guild(payload.guild_id)
-        if guild is None:
-            # Check if we're still in the guild and it's cached.
-            return
-
-        try:
-            role_id = self.emoji_to_role[payload.emoji]
-        except KeyError:
-            # If the emoji isn't the one we care about then exit as well.
-            return
-
-        role = guild.get_role(role_id)
-        if role is None:
-            # Make sure the role still exists and is valid.
-            return
-
-        try:
-            # Finally, add the role.
-            await payload.member.add_roles(role)
-        except discord.HTTPException:
-            # If we want to do something in case of errors we'd do it here.
-            pass
-
-    async def on_raw_reaction_remove(self, payload: discord.RawReactionActionEvent):
-        """Removes a role based on a reaction emoji."""
-        # Make sure that the message the user is reacting to is the one we care about.
-        if payload.message_id != self.role_message_id:
-            return
-
-        guild = self.get_guild(payload.guild_id)
-        if guild is None:
-            # Check if we're still in the guild and it's cached.
-            return
-
-        try:
-            role_id = self.emoji_to_role[payload.emoji]
-        except KeyError:
-            # If the emoji isn't the one we care about then exit as well.
-            return
-
-        role = guild.get_role(role_id)
-        if role is None:
-            # Make sure the role still exists and is valid.
-            return
-
-        # The payload for `on_raw_reaction_remove` does not provide `.member`
-        # so we must get the member ourselves from the payload's `.user_id`.
-        member = guild.get_member(payload.user_id)
-        if member is None:
-            # Make sure the member still exists and is valid.
-            return
-
-        try:
-            # Finally, remove the role.
-            await member.remove_roles(role)
-        except discord.HTTPException:
-            # If we want to do something in case of errors we'd do it here.
-            pass
-
 
 intents = discord.Intents.default()
 intents.members = True
