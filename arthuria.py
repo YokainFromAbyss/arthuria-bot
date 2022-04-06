@@ -65,19 +65,23 @@ async def __нет(ctx):
 # ударить
 @bot.command(aliases=['ударить', 'УДАРИТЬ'])
 async def __ударить(ctx, member: discord.Member = None):
-  global yesno
-  yesno = [" но промахивается", " и попадает прям в глаз"]
-  arg1 = f"{ctx.author.mention} пытается ударить {member.mention}," + (random.choice(yesno))
+  global punch
+  punch = [" но промахивается", " и попадает прям в глаз"]
+  global fireball
+  fireball = [f" в {member.mention}, но он почему-то гаснет на полпути.", f". {member.mention} ловит его лицом и загорается!"]
+  arg1 = f"{ctx.author.mention} пытается ударить {member.mention}," + (random.choice(punch))
   arg2 = f"{ctx.author.mention} стукает {member.mention}!"
   arg3 = f"{ctx.author.mention} кидает палку в {member.mention} и попадает в лицо."
-  arg4 = f"{ctx.author.mention} кастует фаерболл в {member.mention}, но он почему-то гаснет на полпути."
+  arg4 = f"{ctx.author.mention} кастует фаерболл" + (random.choice(fireball))
   arg5 = f"{ctx.author.mention} пытается укусить {member.mention} за ногу!"
   arg6 = f"{ctx.author.mention} засовывет снежок в воротник {member.mention}."
   arg7 = f"{ctx.author.mention} дает поджопник {member.mention}."
   arg8 = f"{ctx.author.mention} дает щелбан {member.mention}."
   arg9 = f"{ctx.author.mention} шепчет на ушко {member.mention} \"Чувствуешь пальчик в жопе? А ручки-то мои у тебя на шее\" :)"
   arg10 = f"{ctx.author.mention} пытается вызвать чуму у {member.mention}, но тут же начинает чихать."
-  test_list = [arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9, arg10]
+  arg11 = f"{ctx.author.mention} делает бэкстаб {member.mention}. Watch your ass!"
+  arg12 = f"{ctx.author.mention} прописывает красочную вертуху по лицу {member.mention}"
+  test_list = [arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9, arg10, arg11, arg12]
   if member == None:
       return
   await ctx.channel.send(random.choice(test_list))
