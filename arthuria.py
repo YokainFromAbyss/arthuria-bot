@@ -100,4 +100,4 @@ async def __цитаты(ctx, member: discord.Member = None):
       return
   await ctx.channel.send(random.choice(quote_list))
 
-bot.run('ODI4MjYxMjA0Mzg3ODIzNjY2.YGnAWw.fofVRaLJIWjjdShZZkHVA2oIpp0')
+bot.run('')
