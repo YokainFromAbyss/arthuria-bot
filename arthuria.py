@@ -1,3 +1,4 @@
+from asyncore import loop
 import discord
 import asyncio
 from asyncio import sleep
@@ -30,15 +31,15 @@ async def on_ready():
     await sleep (60)
     await bot.change_presence(status=discord.Status.online, activity=discord.Game(name="Genshin Impact", type=3))
     await sleep (60)
-    await bot.change_presence(status=discord.Status.online, activity=discord.Game(name="версия 0.0.2alpha", type=3))
+    await bot.change_presence(status=discord.Status.online, activity=discord.Game(name="версия 0.0.3alpha", type=3))
     await sleep (60)
 print("Артурия готова!")
 
 #КОМАНДЫ
-# помощь, бот стучится в личку пользователя
-@bot.command(aliases=['помощь', 'ПОМОЩЬ', 'help', 'HELP'])
-async def __помощь(ctx): 
-    embed=discord.Embed(title="Привет, я Артурия из клана TITAWIN!", description="Мой префикс: `>`.\n\n Моя версия на данный момент `0.0.2alpha`", colour=discord.Colour.blue())
+# помощь
+@bot.command(aliases=['помощь', 'ПОМОЩЬ'])
+async def __помощь(ctx):
+    embed=discord.Embed(title="Привет, я Артурия из клана TITAWIN!", description="Мой префикс: `>`.\n\n Моя версия на данный момент `0.0.3alpha`", colour=discord.Colour.blue())
     embed.set_thumbnail(url="https://telegra.ph/file/14f906d4ad15ba4ccc001.png")
     embed.add_field(name="Команда\n\n", value="`помощь`\n\n`ссылки`\n\n`да`\n\n`нет`\n\n`ударить`", inline=True)
     embed.add_field(name="Описание\n\n", value="полный список команд бота\n\nотправлю в ЛС ссылки на наш клан\n\nшуточный ответ на \"Да\"\n\nшуточный ответ на \"Нет\"\n\nупоминает участника с описанием действия", inline=True)
@@ -64,7 +65,9 @@ async def __нет(ctx):
 # ударить
 @bot.command(aliases=['ударить', 'УДАРИТЬ'])
 async def __ударить(ctx, member: discord.Member = None):
-  arg1 = f"{ctx.author.mention} пытается ударить {member.mention}, но промахивается!"
+  global yesno
+  yesno = [" но промахивается", " и попадает прям в глаз"]
+  arg1 = f"{ctx.author.mention} пытается ударить {member.mention}," + (random.choice(yesno))
   arg2 = f"{ctx.author.mention} стукает {member.mention}!"
   arg3 = f"{ctx.author.mention} кидает палку в {member.mention} и попадает в лицо."
   arg4 = f"{ctx.author.mention} кастует фаерболл в {member.mention}, но он почему-то гаснет на полпути."
@@ -79,6 +82,22 @@ async def __ударить(ctx, member: discord.Member = None):
       return
   await ctx.channel.send(random.choice(test_list))
 
-intents = discord.Intents.default()
-intents.members = True
-bot.run('сюда вставляем токен бота')
+# цитата
+@bot.command(aliases=['цитаты', 'ЦИТАТЫ'])
+async def __цитаты(ctx, member: discord.Member = None):
+  quote1 = f"Ненавижу мультики, где есть один жирный долбоёб\n@namvseyasno"
+  quote2 = f"Пол часа ночи @Gyrmanin"
+  quote3 = f"- Сколько у тебя было IQ в школе?\n- Пятёрка)))\n@namvseyasno"
+  quote4 = f"Ада блядь та еще... видел порно с ней @Gyrmanin"
+  quote5 = f"Германин, куда ты опять сиськи свои вставил? @namvseyasno to @Gyrmanin"
+  quote6 = f"великий китайзиум (с) кто-то"
+  quote7 = f"ДЭБЭДЛЭ @Gyrmanin"
+  quote8 = f"Это даже цитатой назвать сложно, это хуйня какая-то @Simmeris"
+  quote9 = f"У нас токсичные только Диман.. И ты.. @Gyrmanin to @namvseyasno"
+  quote10 = f"Залетим в Башлем @Gyrmanin"
+  quote_list = [quote1, quote2, quote3, quote4, quote5, quote6, quote7, quote8, quote9, quote10]
+  if member == None:
+      return
+  await ctx.channel.send(random.choice(quote_list))
+
+bot.run('ODI4MjYxMjA0Mzg3ODIzNjY2.YGnAWw.fofVRaLJIWjjdShZZkHVA2oIpp0')
