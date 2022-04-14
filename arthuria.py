@@ -12,8 +12,11 @@ from discord import guild
 from discord import mentions
 import json
 
+#задаем префикс
 PREFIX = ('>')
-bot= commands.Bot(command_prefix=PREFIX, description='Hi')
+intents = discord.Intents().all()
+bot= commands.Bot(command_prefix=PREFIX, intents=intents)
+
 
 # СТАТУС
 # задаем варианты статуса бота в режиме онлайн
@@ -34,16 +37,16 @@ async def on_ready():
     await sleep (60)
 print("Артурия готова!")
 
-@bot.event
-async def on_member_join(member):
-    role = member.guild.get_role(role_id=954120177606357132)
-    await member.add_roles(role)
+# @bot.event
+# async def on_member_join(member):
+#     role = discord.utils.get(member.server.roles, id=954120177606357132)
+#     await bot.add_roles(member, role)
 
 #КОМАНДЫ
-# помощь
+# помощь - присылает автору инфу по боту и командам прямо в ЛС
 @bot.command(aliases=['помощь', 'ПОМОЩЬ'])
 async def __помощь(ctx):
-    embed=discord.Embed(title=f":wave: Привет, {ctx.author.display_name}, я Артурия из клана TITAWIN!", description="Мой префикс: `>`.\n Моя версия на данный момент `0.0.4alpha`", colour=discord.Colour.blue())
+    embed=discord.Embed(title=f":wave: Привет, {ctx.author.display_name}, я Артурия из клана TITAWIN!", description="Мой префикс: `>`.\n Моя версия на данный момент `0.0.4alpha`", color=0x4fff4d)
     embed.set_thumbnail(url="https://telegra.ph/file/14f906d4ad15ba4ccc001.png")
     embed.add_field(name="ИНФО", value="> `помощь`, `алиасы`, `бот`", inline=False)
     embed.add_field(name="ОБЩЕНИЕ", value="> `ударить`, `да`, `нет`, `цитаты`", inline=False)
@@ -51,26 +54,36 @@ async def __помощь(ctx):
     embed.set_footer(text="Ответ на сообщение от: {}".format(ctx.author.display_name))
     await ctx.author.send(embed=embed)
 
-# ссылки
+# очистка - чистит указанное количество сообщений в чате
+@bot.command(pass_context=True)
+@commands.has_permissions(administrator=True)
+async def очистка(ctx, limit):
+    await ctx.message.delete()
+    limit = int(limit)
+    deleted = await ctx.channel.purge(limit=limit)
+    cofirmdelete_embed = discord.Embed(title='Удалено', description=f'Удалено **{len(deleted)}** сообщений в **#{ctx.channel}**', color=0x4fff4d)
+    await ctx.channel.send(embed=cofirmdelete_embed, delete_after=4.0)
+
+# ссылки - отправляет автору сообщения ссылки на клан в ЛС
 @bot.command(aliases=['ссылки', 'ССЫЛКИ', 'links', 'LINKS'])
 async def __ссылки(ctx):
-  emb = discord.Embed(colour=discord.Colour.blue(),title='Привет!\nВот ссылки на наш клан:')
+  emb = discord.Embed(colour=discord.Colour.blue(),title="Привет!\nВот ссылки на наш клан:", color=0x4fff4d)
   emb.description = ':white_small_square:[Bungie.net](https://www.bungie.net/ru/ClanV2/Index?groupId=4406402)\n:white_small_square:[Discord](https://discord.gg/zAewvnTp3X)'
   await ctx.author.send(embed=emb)
 
-# да
+# да - ну тут и так все понятно + удаляет сообщение с командой. Да, я считаю это смешным.
 @bot.command(aliases=['да', 'ДА'])
 async def __да(ctx):
   await ctx.send('пизда :)')
   await ctx.message.delete()
 
-# нет
+# нет - аналогично предыдущей команде
 @bot.command(aliases=['нет', 'НЕТ'])
 async def __нет(ctx):
   await ctx.send('пидора ответ :)')
   await ctx.message.delete()
 
-# ударить
+# ударить - автор упоминает другого юзера, на что бот удаляет сообщение автора и в РП-форме выводит сценку с участием автора и целевого юзера
 @bot.command(aliases=['ударить', 'УДАРИТЬ'])
 async def __ударить(ctx, member: discord.Member = None):
   global punch
@@ -95,7 +108,7 @@ async def __ударить(ctx, member: discord.Member = None):
   await ctx.channel.send(random.choice(test_list))
   await ctx.message.delete()
 
-# бот
+# бот = инфа о авторе бота, ссылки и ссылка на донатик
 @bot.command()
 async def бот(ctx):
     embed=discord.Embed(title=f"Артурия Пендрагон, бот клана TITAWIN", description="Версия бота: `0.0.4alpha`", colour=discord.Colour.blue())
@@ -107,7 +120,7 @@ async def бот(ctx):
     await ctx.author.send(embed=embed)
 
 
-# цитата
+# цитата - выводит рандомную цитату из фонда золотых цитат клана TITAWIN
 @bot.command(aliases=['цитаты', 'ЦИТАТЫ', 'цитата', 'ЦИТАТА'])
 async def __цитаты(ctx):
   q1 = f"Ненавижу мультики, где есть один жирный долбоёб\n@namvseyasno"
@@ -126,5 +139,5 @@ async def __цитаты(ctx):
   q14 = f"Таблица Мандилеева @Gyrmanin"
   quote_list = [q1, q2, q3, q4, q5, q6, q7, q8, q9, q10, q11, q12, q13, q14]
   await ctx.channel.send(random.choice(quote_list))
-
+  
 bot.run('')
