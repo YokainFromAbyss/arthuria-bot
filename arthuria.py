@@ -1,4 +1,3 @@
-from asyncore import loop
 import discord
 import asyncio
 from asyncio import sleep
@@ -31,18 +30,25 @@ async def on_ready():
     await sleep (60)
     await bot.change_presence(status=discord.Status.online, activity=discord.Game(name="Genshin Impact", type=3))
     await sleep (60)
-    await bot.change_presence(status=discord.Status.online, activity=discord.Game(name="версия 0.0.3alpha", type=3))
+    await bot.change_presence(status=discord.Status.online, activity=discord.Game(name=">помощь", type=3))
     await sleep (60)
 print("Артурия готова!")
+
+@bot.event
+async def on_member_join(member):
+    role = member.guild.get_role(role_id=954120177606357132)
+    await member.add_roles(role)
 
 #КОМАНДЫ
 # помощь
 @bot.command(aliases=['помощь', 'ПОМОЩЬ'])
 async def __помощь(ctx):
-    embed=discord.Embed(title="Привет, я Артурия из клана TITAWIN!", description="Мой префикс: `>`.\n\n Моя версия на данный момент `0.0.3alpha`", colour=discord.Colour.blue())
+    embed=discord.Embed(title=f":wave: Привет, {ctx.author.display_name}, я Артурия из клана TITAWIN!", description="Мой префикс: `>`.\n Моя версия на данный момент `0.0.4alpha`", colour=discord.Colour.blue())
     embed.set_thumbnail(url="https://telegra.ph/file/14f906d4ad15ba4ccc001.png")
-    embed.add_field(name="Команда\n\n", value="`помощь`\n\n`ссылки`\n\n`да`\n\n`нет`\n\n`ударить`", inline=True)
-    embed.add_field(name="Описание\n\n", value="полный список команд бота\n\nотправлю в ЛС ссылки на наш клан\n\nшуточный ответ на \"Да\"\n\nшуточный ответ на \"Нет\"\n\nупоминает участника с описанием действия", inline=True)
+    embed.add_field(name="ИНФО", value="> `помощь`, `алиасы`, `бот`", inline=False)
+    embed.add_field(name="ОБЩЕНИЕ", value="> `ударить`, `да`, `нет`, `цитаты`", inline=False)
+    embed.add_field(name="КЛАН", value="> `ссылки`", inline=False)
+    embed.set_footer(text="Ответ на сообщение от: {}".format(ctx.author.display_name))
     await ctx.author.send(embed=embed)
 
 # ссылки
@@ -56,11 +62,13 @@ async def __ссылки(ctx):
 @bot.command(aliases=['да', 'ДА'])
 async def __да(ctx):
   await ctx.send('пизда :)')
+  await ctx.message.delete()
 
 # нет
 @bot.command(aliases=['нет', 'НЕТ'])
 async def __нет(ctx):
   await ctx.send('пидора ответ :)')
+  await ctx.message.delete()
 
 # ударить
 @bot.command(aliases=['ударить', 'УДАРИТЬ'])
@@ -85,23 +93,38 @@ async def __ударить(ctx, member: discord.Member = None):
   if member == None:
       return
   await ctx.channel.send(random.choice(test_list))
+  await ctx.message.delete()
+
+# бот
+@bot.command()
+async def бот(ctx):
+    embed=discord.Embed(title=f"Артурия Пендрагон, бот клана TITAWIN", description="Версия бота: `0.0.4alpha`", colour=discord.Colour.blue())
+    embed.set_thumbnail(url="https://telegra.ph/file/e756263abab1ffa102c11.png")
+    embed.add_field(name="Разработчик Бота", value="YokainFromAbyss#2300", inline=False)
+    embed.add_field(name="Полезные ссылки", value="[Twitter](https://twitter.com/yokainlovesyou), [Клан TITAWIN](https://www.bungie.net/ru/ClanV2/Index?groupId=4406402), [Github](https://github.com/YokainFromAbyss)", inline=False)
+    embed.add_field(name="Донат", value="[Закинуть монетку](https://www.donationalerts.com/r/yokainlovesyou)", inline=False)
+    embed.set_footer(text="Ответ на сообщение от: {}".format(ctx.author.display_name))
+    await ctx.author.send(embed=embed)
+
 
 # цитата
-@bot.command(aliases=['цитаты', 'ЦИТАТЫ'])
-async def __цитаты(ctx, member: discord.Member = None):
-  quote1 = f"Ненавижу мультики, где есть один жирный долбоёб\n@namvseyasno"
-  quote2 = f"Пол часа ночи @Gyrmanin"
-  quote3 = f"- Сколько у тебя было IQ в школе?\n- Пятёрка)))\n@namvseyasno"
-  quote4 = f"Ада блядь та еще... видел порно с ней @Gyrmanin"
-  quote5 = f"Германин, куда ты опять сиськи свои вставил? @namvseyasno to @Gyrmanin"
-  quote6 = f"великий китайзиум (с) кто-то"
-  quote7 = f"ДЭБЭДЛЭ @Gyrmanin"
-  quote8 = f"Это даже цитатой назвать сложно, это хуйня какая-то @Simmeris"
-  quote9 = f"У нас токсичные только Диман.. И ты.. @Gyrmanin to @namvseyasno"
-  quote10 = f"Залетим в Башлем @Gyrmanin"
-  quote_list = [quote1, quote2, quote3, quote4, quote5, quote6, quote7, quote8, quote9, quote10]
-  if member == None:
-      return
+@bot.command(aliases=['цитаты', 'ЦИТАТЫ', 'цитата', 'ЦИТАТА'])
+async def __цитаты(ctx):
+  q1 = f"Ненавижу мультики, где есть один жирный долбоёб\n@namvseyasno"
+  q2 = f"Пол часа ночи @Gyrmanin"
+  q3 = f"- Сколько у тебя было IQ в школе?\n- Пятёрка)))\n@namvseyasno"
+  q4 = f"Ада блядь та еще... видел порно с ней @Gyrmanin"
+  q5 = f"Германин, куда ты опять сиськи свои вставил? @namvseyasno to @Gyrmanin"
+  q6 = f"великий китайзиум (с) кто-то"
+  q7 = f"ДЭБЭДЛЭ @Gyrmanin"
+  q8 = f"Это даже цитатой назвать сложно, это хуйня какая-то @Simmeris"
+  q9 = f"У нас токсичные только Диман.. И ты.. @Gyrmanin to @namvseyasno"
+  q10 = f"Залетим в Башлем @Gyrmanin"
+  q11 = f"Покушать хачи отойтю @Gyrmanin"
+  q12 = f"Это не в твой камень огород @Gyrmanin"
+  q13 = f"Про \"Дыхание Левиафана\" и стан воителей: Пока ты натягиваешь тетиву, воитель натянет тебя @Primis"
+  q14 = f"Таблица Мандилеева @Gyrmanin"
+  quote_list = [q1, q2, q3, q4, q5, q6, q7, q8, q9, q10, q11, q12, q13, q14]
   await ctx.channel.send(random.choice(quote_list))
 
 bot.run('')
