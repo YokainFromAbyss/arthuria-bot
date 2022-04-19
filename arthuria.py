@@ -8,6 +8,7 @@ from discord import colour
 from discord import embeds
 from discord.utils import get
 from discord.ext import commands
+from discord.ext.commands import has_permissions, MissingPermissions
 import random
 from discord import guild
 from discord import mentions
@@ -20,6 +21,9 @@ bot= commands.Bot(command_prefix=PREFIX, intents=intents)
 
 #переменные на всякие штуки
 newbierole = "Новичок"
+classrole = "⠀⠀⠀⠀⠀⠀⠀⠀КЛАССЫ⠀⠀⠀⠀⠀⠀⠀⠀"
+specialrole = "⠀⠀⠀⠀⠀⠀ОСОБЫЕ РОЛИ⠀⠀⠀⠀⠀⠀"
+guardianrole = "Страж"
 
 
 # СТАТУС
@@ -48,6 +52,21 @@ async def on_member_join(member):
   await member.add_roles(role)
   print(f"{member} получил {role}")
 
+# выдает роли по команде при прохождении собеседования
+@bot.command(aliases=['роли', 'РОЛИ'], pass_context=True)
+@has_permissions(manage_roles=True)
+async def __роли(ctx, member: discord.Member = None):
+  role1 = get(member.guild.roles, name=classrole)
+  role2 = get(member.guild.roles, name=specialrole)
+  role3 = get(member.guild.roles, name=guardianrole)
+  role = get(member.guild.roles, name=newbierole)
+  await member.add_roles(role1)
+  await member.add_roles(role2)
+  await member.add_roles(role3)
+  await member.remove_roles(role)
+  await ctx.channel.send(f"Роли {member.mention} выданы", delete_after=4.0)
+  print(f"{member} получил роли {role1}, {role2}, {role3}")
+
 #КОМАНДЫ
 # помощь - присылает автору инфу по боту и командам прямо в ЛС
 @bot.command(aliases=['помощь', 'ПОМОЩЬ'])
@@ -62,13 +81,19 @@ async def __помощь(ctx):
 
 # очистка - чистит указанное количество сообщений в чате
 @bot.command(pass_context=True)
-@commands.has_permissions(administrator=True)
+@has_permissions(manage_roles=True)
 async def очистка(ctx, limit):
     await ctx.message.delete()
     limit = int(limit)
     deleted = await ctx.channel.purge(limit=limit)
     cofirmdelete_embed = discord.Embed(title='Удалено', description=f'Удалено **{len(deleted)}** сообщений в **#{ctx.channel}**', color=0x4fff4d)
     await ctx.channel.send(embed=cofirmdelete_embed, delete_after=4.0)
+
+# пишет от имени бота
+@bot.command()
+async def эхо(ctx): 
+    channel = discord.Object(id=input('channel id'))
+    await bot.send_message(channel, input('message'))
 
 # ссылки - отправляет автору сообщения ссылки на клан в ЛС
 @bot.command(aliases=['ссылки', 'ССЫЛКИ', 'links', 'LINKS'])
@@ -124,6 +149,17 @@ async def бот(ctx):
     embed.add_field(name="Донат", value="[Закинуть монетку](https://www.donationalerts.com/r/yokainlovesyou)", inline=False)
     embed.set_footer(text="Ответ на сообщение от: {}".format(ctx.author.display_name))
     await ctx.author.send(embed=embed)
+
+# # панель администратора
+# @bot.command()
+# async def админка(ctx):
+#     embed=discord.Embed(title=f":wave: Привет, {ctx.author.display_name}, это панель администратора'", description="Мой префикс: `>`.\n Моя версия на данный момент `0.0.4alpha`", color=0x4fff4d)
+#     embed.set_thumbnail(url="https://telegra.ph/file/14f906d4ad15ba4ccc001.png")
+#     embed.add_field(name="ИНФО", value="> `помощь`, `алиасы`, `бот`", inline=False)
+#     embed.add_field(name="ОБЩЕНИЕ", value="> `ударить`, `да`, `нет`, `цитаты`", inline=False)
+#     embed.add_field(name="КЛАН", value="> `ссылки`", inline=False)
+#     embed.set_footer(text="Ответ на сообщение от: {}".format(ctx.author.display_name))
+#     await ctx.author.send(embed=embed)
 
 
 # цитата - выводит рандомную цитату из фонда золотых цитат клана TITAWIN
