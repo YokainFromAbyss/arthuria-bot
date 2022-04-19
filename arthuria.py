@@ -6,6 +6,7 @@ from discord.ext import tasks
 from discord.ext.commands import Bot
 from discord import colour
 from discord import embeds
+from discord.utils import get
 from discord.ext import commands
 import random
 from discord import guild
@@ -17,6 +18,9 @@ PREFIX = ('>')
 intents = discord.Intents().all()
 bot= commands.Bot(command_prefix=PREFIX, intents=intents)
 
+#переменные на всякие штуки
+newbierole = "Новичок"
+
 
 # СТАТУС
 # задаем варианты статуса бота в режиме онлайн
@@ -24,23 +28,25 @@ bot= commands.Bot(command_prefix=PREFIX, intents=intents)
 async def on_ready():
   while True:
     await bot.change_presence(activity=discord.Activity(type=discord.ActivityType.listening, name="Гражданская Оборона"))
-    await sleep (60)
+    await sleep (30)
     await bot.change_presence(status=discord.Status.online, activity=discord.Game(name="Горнило", type=3))
-    await sleep (60)
+    await sleep (30)
     await bot.change_presence(status=discord.Status.online, activity=discord.Game(name="Испытания Осириса", type=3))
-    await sleep (60)
+    await sleep (30)
     await bot.change_presence(status=discord.Status.online, activity=discord.Game(name="Железное Знамя", type=3))
-    await sleep (60)
+    await sleep (30)
     await bot.change_presence(status=discord.Status.online, activity=discord.Game(name="Genshin Impact", type=3))
-    await sleep (60)
+    await sleep (30)
     await bot.change_presence(status=discord.Status.online, activity=discord.Game(name=">помощь", type=3))
-    await sleep (60)
+    await sleep (30)
 print("Артурия готова!")
 
-# @bot.event
-# async def on_member_join(member):
-#     role = discord.utils.get(member.server.roles, id=954120177606357132)
-#     await bot.add_roles(member, role)
+# автоматически выдает роль при входе на сервер
+@bot.event
+async def on_member_join(member):
+  role = get(member.guild.roles, name=newbierole)
+  await member.add_roles(role)
+  print(f"{member} получил {role}")
 
 #КОМАНДЫ
 # помощь - присылает автору инфу по боту и командам прямо в ЛС
