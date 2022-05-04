@@ -13,22 +13,25 @@ import random
 from discord import guild
 from discord import mentions
 import json
+import command_args
 
 #задаем префикс
 PREFIX = ('>')
 intents = discord.Intents().all()
 bot= commands.Bot(command_prefix=PREFIX, intents=intents)
 
-# переменные на всякие штуки. Меняем названия ролей на те, которые прописаны у вас. 
-# Classrole и Specialrole можно скопировать себе на сервер и сделать красивые разделители в карточке пользователя.
+#переменные на всякие штуки
 newbierole = "Новичок"
 classrole = "⠀⠀⠀⠀⠀⠀⠀⠀КЛАССЫ⠀⠀⠀⠀⠀⠀⠀⠀"
 specialrole = "⠀⠀⠀⠀⠀⠀ОСОБЫЕ РОЛИ⠀⠀⠀⠀⠀⠀"
 guardianrole = "Страж"
+huntrole = "Охотник"
+titanrole = "Титан"
+warlockrole = "Варлок"
 
 
 # СТАТУС
-# задаем варианты статуса бота в режиме онлайн, которые будут сменять друг друга раз в 30 секунд.
+# задаем варианты статуса бота в режиме онлайн
 @bot.event
 async def on_ready():
   while True:
@@ -46,14 +49,14 @@ async def on_ready():
     await sleep (30)
 print("Артурия готова!")
 
-# автоматически выдает роль при входе на сервер. Берет newbierole
+# автоматически выдает роль при входе на сервер
 @bot.event
 async def on_member_join(member):
   role = get(member.guild.roles, name=newbierole)
   await member.add_roles(role)
   print(f"{member} получил {role}")
 
-# выдает 3 основных роли по команде при прохождении собеседования. Нужно, если у вас настроены права доступа к серверу и Новичкам он изначально недоступен.
+# выдает роли по команде при прохождении собеседования
 @bot.command(aliases=['роли', 'РОЛИ'], pass_context=True)
 @has_permissions(manage_roles=True)
 async def __роли(ctx, member: discord.Member = None):
@@ -69,7 +72,7 @@ async def __роли(ctx, member: discord.Member = None):
   print(f"{member} получил роли {role1}, {role2}, {role3}")
 
 #КОМАНДЫ
-# помощь - присылает автору инфу по боту и командам прямо в ЛС в виде красивого эмбеда.
+# помощь - присылает автору инфу по боту и командам прямо в ЛС
 @bot.command(aliases=['помощь', 'ПОМОЩЬ'])
 async def __помощь(ctx):
     embed=discord.Embed(title=f":wave: Привет, {ctx.author.display_name}, я Артурия из клана TITAWIN!", description="Мой префикс: `>`.\n Моя версия на данный момент `0.0.4alpha`", color=0x4fff4d)
@@ -80,7 +83,30 @@ async def __помощь(ctx):
     embed.set_footer(text="Ответ на сообщение от: {}".format(ctx.author.display_name))
     await ctx.author.send(embed=embed)
 
-# очистка - чистит указанное количество сообщений в чате, сообщает о количестве удаленных сообщений, а потом удаляет и сообщение автора и свое.
+# кастомизация профиля на сервере. Позже надо будет переделать это в одну команду, а не городить три отдельных :/
+
+@bot.command(pass_context=True)
+@commands.has_role("Страж")
+async def охотник(ctx, member: discord.Member = None):
+  role_hunt = get(member.guild.roles, name=huntrole)
+  await member.add_roles(role_hunt)
+  await ctx.channel.send(f"Роли {member.mention} выданы", delete_after=4.0)
+
+@bot.command(pass_context=True)
+@commands.has_role("Страж")
+async def титан(ctx, member: discord.Member = None):
+  role_tit = get(member.guild.roles, name=titanrole)
+  await member.add_roles(role_tit)
+  await ctx.channel.send(f"Роли {member.mention} выданы", delete_after=4.0)
+
+@bot.command(pass_context=True)
+@commands.has_role("Страж")
+async def варлок(ctx, member: discord.Member = None):
+  role_war = get(member.guild.roles, name=warlockrole)
+  await member.add_roles(role_war)
+  await ctx.channel.send(f"Роли {member.mention} выданы", delete_after=4.0)
+
+# очистка - чистит указанное количество сообщений в чате
 @bot.command(pass_context=True)
 @has_permissions(manage_roles=True)
 async def очистка(ctx, limit):
@@ -90,32 +116,16 @@ async def очистка(ctx, limit):
     cofirmdelete_embed = discord.Embed(title='Удалено', description=f'Удалено **{len(deleted)}** сообщений в **#{ctx.channel}**', color=0x4fff4d)
     await ctx.channel.send(embed=cofirmdelete_embed, delete_after=4.0)
 
-# пишет от имени бота
-# @bot.command()
-# async def эхо(ctx): 
-#    channel = discord.Object(id=input('channel id'))
-#    await bot.send_message(channel, input('message'))
 
-# ссылки - отправляет автору сообщения ссылки на клан в ЛС. Можно поменять на свои.
+# ссылки - отправляет автору сообщения ссылки на клан в ЛС
 @bot.command(aliases=['ссылки', 'ССЫЛКИ', 'links', 'LINKS'])
 async def __ссылки(ctx):
-  emb = discord.Embed(colour=discord.Colour.blue(),title="Привет!\nВот ссылки на наш клан:", color=0x4fff4d)
+  emb = discord.Embed(title="Привет!\nВот ссылки на наш клан:", color=0x4fff4d)
   emb.description = ':white_small_square:[Bungie.net](https://www.bungie.net/ru/ClanV2/Index?groupId=4406402)\n:white_small_square:[Discord](https://discord.gg/zAewvnTp3X)'
   await ctx.author.send(embed=emb)
 
-# да - ну тут и так все понятно + удаляет сообщение с командой. Да, я считаю это смешным.
-@bot.command(aliases=['да', 'ДА'])
-async def __да(ctx):
-  await ctx.send('пизда :)')
-  await ctx.message.delete()
 
-# нет - аналогично предыдущей команде
-@bot.command(aliases=['нет', 'НЕТ'])
-async def __нет(ctx):
-  await ctx.send('пидора ответ :)')
-  await ctx.message.delete()
-
-# ударить - автор упоминает другого юзера, на что бот удаляет сообщение автора и в РП-форме выводит рандомную сценку из списка с участием автора и целевого юзера.
+# ударить - автор упоминает другого юзера, на что бот удаляет сообщение автора и в РП-форме выводит сценку с участием автора и целевого юзера
 @bot.command(aliases=['ударить', 'УДАРИТЬ'])
 async def __ударить(ctx, member: discord.Member = None):
   global punch
@@ -140,10 +150,10 @@ async def __ударить(ctx, member: discord.Member = None):
   await ctx.channel.send(random.choice(test_list))
   await ctx.message.delete()
 
-# бот - инфа о авторе бота, ссылки и ссылка на донатик
+# бот = инфа о авторе бота, ссылки и ссылка на донатик
 @bot.command()
 async def бот(ctx):
-    embed=discord.Embed(title=f"Артурия Пендрагон, бот клана TITAWIN", description="Версия бота: `0.0.5alpha`", colour=discord.Colour.blue())
+    embed=discord.Embed(title=f"Артурия Пендрагон, бот клана TITAWIN", description="Версия бота: `0.0.5alpha`", color=0x4fff4d)
     embed.set_thumbnail(url="https://telegra.ph/file/e756263abab1ffa102c11.png")
     embed.add_field(name="Разработчик Бота", value="YokainFromAbyss#2300", inline=False)
     embed.add_field(name="Полезные ссылки", value="[Twitter](https://twitter.com/yokainlovesyou), [Клан TITAWIN](https://www.bungie.net/ru/ClanV2/Index?groupId=4406402), [Github](https://github.com/YokainFromAbyss)", inline=False)
@@ -151,36 +161,14 @@ async def бот(ctx):
     embed.set_footer(text="Ответ на сообщение от: {}".format(ctx.author.display_name))
     await ctx.author.send(embed=embed)
 
-# # панель администратора - в разработке.
-# @bot.command()
-# async def админка(ctx):
-#     embed=discord.Embed(title=f":wave: Привет, {ctx.author.display_name}, это панель администратора'", description="Мой префикс: `>`.\n Моя версия на данный момент `0.0.4alpha`", color=0x4fff4d)
-#     embed.set_thumbnail(url="https://telegra.ph/file/14f906d4ad15ba4ccc001.png")
-#     embed.add_field(name="ИНФО", value="> `помощь`, `алиасы`, `бот`", inline=False)
-#     embed.add_field(name="ОБЩЕНИЕ", value="> `ударить`, `да`, `нет`, `цитаты`", inline=False)
-#     embed.add_field(name="КЛАН", value="> `ссылки`", inline=False)
-#     embed.set_footer(text="Ответ на сообщение от: {}".format(ctx.author.display_name))
-#     await ctx.author.send(embed=embed)
-
-
-# цитата - выводит рандомную цитату из фонда золотых цитат клана TITAWIN
-@bot.command(aliases=['цитаты', 'ЦИТАТЫ', 'цитата', 'ЦИТАТА'])
-async def __цитаты(ctx):
-  q1 = f"Ненавижу мультики, где есть один жирный долбоёб\n@namvseyasno"
-  q2 = f"Пол часа ночи @Gyrmanin"
-  q3 = f"- Сколько у тебя было IQ в школе?\n- Пятёрка)))\n@namvseyasno"
-  q4 = f"Ада блядь та еще... видел порно с ней @Gyrmanin"
-  q5 = f"Германин, куда ты опять сиськи свои вставил? @namvseyasno to @Gyrmanin"
-  q6 = f"великий китайзиум (с) кто-то"
-  q7 = f"ДЭБЭДЛЭ @Gyrmanin"
-  q8 = f"Это даже цитатой назвать сложно, это хуйня какая-то @Simmeris"
-  q9 = f"У нас токсичные только Диман.. И ты.. @Gyrmanin to @namvseyasno"
-  q10 = f"Залетим в Башлем @Gyrmanin"
-  q11 = f"Покушать хачи отойтю @Gyrmanin"
-  q12 = f"Это не в твой камень огород @Gyrmanin"
-  q13 = f"Про \"Дыхание Левиафана\" и стан воителей: Пока ты натягиваешь тетиву, воитель натянет тебя @Primis"
-  q14 = f"Таблица Мандилеева @Gyrmanin"
-  quote_list = [q1, q2, q3, q4, q5, q6, q7, q8, q9, q10, q11, q12, q13, q14]
-  await ctx.channel.send(random.choice(quote_list))
+# панель администратора
+@bot.command()
+@has_permissions(manage_roles=True)
+async def админка(ctx):
+    embed=discord.Embed(title=f":wave: Привет, {ctx.author.display_name}, это панель администратора'", description="Мой префикс: `>`.\n Моя версия на данный момент `0.0.5alpha`", color=0x4fff4d)
+    embed.set_thumbnail(url="https://telegra.ph/file/14f906d4ad15ba4ccc001.png")
+    embed.add_field(name="Команды", value="`>роли @ник` - выдаёт Новичку роли для открытия сервера после собеседования;\n`>очистка <число>` - очищает чат от указанного количества сообщений;", inline=False)
+    embed.set_footer(text="Ответ на сообщение от: {}".format(ctx.author.display_name))
+    await ctx.author.send(embed=embed)
   
 bot.run('')
