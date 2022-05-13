@@ -13,14 +13,13 @@ import random
 from discord import guild
 from discord import mentions
 import json
-import command_args
 
-#задаем префикс
+# задаем префикс
 PREFIX = ('>')
 intents = discord.Intents().all()
 bot= commands.Bot(command_prefix=PREFIX, intents=intents)
 
-#переменные на всякие штуки
+# переменные на всякие штуки
 newbierole = "Новичок"
 classrole = "⠀⠀⠀⠀⠀⠀⠀⠀КЛАССЫ⠀⠀⠀⠀⠀⠀⠀⠀"
 specialrole = "⠀⠀⠀⠀⠀⠀ОСОБЫЕ РОЛИ⠀⠀⠀⠀⠀⠀"
@@ -56,6 +55,39 @@ async def on_member_join(member):
   await member.add_roles(role)
   print(f"{member} получил {role}")
 
+@bot.command()
+@has_permissions(administrator=True)
+async def эхо(ctx):
+  author = ctx.message.author
+  await ctx.channel.send(ctx)
+
+# подброс монетки
+@bot.command()
+async def монетка(ctx):
+  variants_coin = ['У тебя орёл!', 'У тебя решка!', 'Монетка упала на ребро, перекидывайте!']
+  await ctx.channel.send(random.choice(variants_coin))
+
+# выдает случайное число из заданного диапазона
+@bot.command()
+async def рандом(ctx, num1 = None, num2 = None):
+    author = ctx.message.author
+    avatar = author.avatar_url
+    if num1 != None:
+        if num2 != None:
+            x = int(num1)
+            y = int(num2)
+            if x < y:
+                value = random.randint(x,y)
+                embed=discord.Embed(title='Случайное число', description=f'{author.mention}, вот ваше число: \n**{value}**', color=0x4fff4d)
+                embed.set_author(name=f"{author}", icon_url=f"{avatar}")
+                await ctx.send(embed=embed)
+            else:
+                await ctx.send("Первое число больше второго")
+        else:
+            await ctx.send('Вы не ввели наибольшее число!')
+    else:
+        await ctx.send('Вы не ввели наименьшее число')
+
 # выдает роли по команде при прохождении собеседования
 @bot.command(aliases=['роли', 'РОЛИ'], pass_context=True)
 @has_permissions(manage_roles=True)
@@ -71,14 +103,14 @@ async def __роли(ctx, member: discord.Member = None):
   await ctx.channel.send(f"Роли {member.mention} выданы", delete_after=4.0)
   print(f"{member} получил роли {role1}, {role2}, {role3}")
 
-#КОМАНДЫ
+# КОМАНДЫ
 # помощь - присылает автору инфу по боту и командам прямо в ЛС
 @bot.command(aliases=['помощь', 'ПОМОЩЬ'])
 async def __помощь(ctx):
-    embed=discord.Embed(title=f":wave: Привет, {ctx.author.display_name}, я Артурия из клана TITAWIN!", description="Мой префикс: `>`.\n Моя версия на данный момент `0.0.4alpha`", color=0x4fff4d)
+    embed=discord.Embed(title=f":wave: Привет, {ctx.author.display_name}, я Артурия из клана TITAWIN!", description="Мой префикс: `>`.\n Моя версия на данный момент `0.0.5alpha`", color=0x4fff4d)
     embed.set_thumbnail(url="https://telegra.ph/file/14f906d4ad15ba4ccc001.png")
     embed.add_field(name="ИНФО", value="> `помощь`, `алиасы`, `бот`", inline=False)
-    embed.add_field(name="ОБЩЕНИЕ", value="> `ударить`, `да`, `нет`, `цитаты`", inline=False)
+    embed.add_field(name="ОБЩЕНИЕ", value="> `ударить`, `да`, `нет`, `цитаты`, `монетка`, `рандом <наименьшее число> <наибольшее число>`", inline=False)
     embed.add_field(name="КЛАН", value="> `ссылки`", inline=False)
     embed.set_footer(text="Ответ на сообщение от: {}".format(ctx.author.display_name))
     await ctx.author.send(embed=embed)
@@ -158,6 +190,7 @@ async def бот(ctx):
     embed.add_field(name="Разработчик Бота", value="YokainFromAbyss#2300", inline=False)
     embed.add_field(name="Полезные ссылки", value="[Twitter](https://twitter.com/yokainlovesyou), [Клан TITAWIN](https://www.bungie.net/ru/ClanV2/Index?groupId=4406402), [Github](https://github.com/YokainFromAbyss)", inline=False)
     embed.add_field(name="Донат", value="[Закинуть монетку](https://www.donationalerts.com/r/yokainlovesyou)", inline=False)
+    embed.add_field(name="Благодарности", value="Ningi", inline=False)
     embed.set_footer(text="Ответ на сообщение от: {}".format(ctx.author.display_name))
     await ctx.author.send(embed=embed)
 
