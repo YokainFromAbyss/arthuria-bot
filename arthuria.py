@@ -14,12 +14,12 @@ from discord import guild
 from discord import mentions
 import json
 
-# задаем префикс
+#задаем префикс
 PREFIX = ('>')
 intents = discord.Intents().all()
 bot= commands.Bot(command_prefix=PREFIX, intents=intents)
 
-# переменные на всякие штуки
+#переменные на всякие штуки
 newbierole = "Новичок"
 classrole = "⠀⠀⠀⠀⠀⠀⠀⠀КЛАССЫ⠀⠀⠀⠀⠀⠀⠀⠀"
 specialrole = "⠀⠀⠀⠀⠀⠀ОСОБЫЕ РОЛИ⠀⠀⠀⠀⠀⠀"
@@ -27,7 +27,8 @@ guardianrole = "Страж"
 huntrole = "Охотник"
 titanrole = "Титан"
 warlockrole = "Варлок"
-
+global bot_version
+bot_version = "`0.0.6a`"
 
 # СТАТУС
 # задаем варианты статуса бота в режиме онлайн
@@ -61,13 +62,17 @@ async def эхо(ctx):
   author = ctx.message.author
   await ctx.channel.send(ctx)
 
-# подброс монетки
 @bot.command()
 async def монетка(ctx):
-  variants_coin = ['У тебя орёл!', 'У тебя решка!', 'Монетка упала на ребро, перекидывайте!']
-  await ctx.channel.send(random.choice(variants_coin))
+  coin = random.randint(0, 100)
+  if coin <= 10:
+    await ctx.channel.send("Монетка упала на ребро, перекидывай")
+  else:
+    if (coin > 10 and coin < 46):
+      await ctx.channel.send("У тебя решка!")
+    else:
+      await ctx.channel.send("У тебя орёл!")
 
-# выдает случайное число из заданного диапазона
 @bot.command()
 async def рандом(ctx, num1 = None, num2 = None):
     author = ctx.message.author
@@ -103,11 +108,11 @@ async def __роли(ctx, member: discord.Member = None):
   await ctx.channel.send(f"Роли {member.mention} выданы", delete_after=4.0)
   print(f"{member} получил роли {role1}, {role2}, {role3}")
 
-# КОМАНДЫ
+#КОМАНДЫ
 # помощь - присылает автору инфу по боту и командам прямо в ЛС
 @bot.command(aliases=['помощь', 'ПОМОЩЬ'])
 async def __помощь(ctx):
-    embed=discord.Embed(title=f":wave: Привет, {ctx.author.display_name}, я Артурия из клана TITAWIN!", description="Мой префикс: `>`.\n Моя версия на данный момент `0.0.5alpha`", color=0x4fff4d)
+    embed=discord.Embed(title=f":wave: Привет, {ctx.author.display_name}, я Артурия из клана TITAWIN!", description="Мой префикс: `>`.\n Моя версия на данный момент: " + bot_version, color=0x4fff4d)
     embed.set_thumbnail(url="https://telegra.ph/file/14f906d4ad15ba4ccc001.png")
     embed.add_field(name="ИНФО", value="> `помощь`, `алиасы`, `бот`", inline=False)
     embed.add_field(name="ОБЩЕНИЕ", value="> `ударить`, `да`, `нет`, `цитаты`, `монетка`, `рандом <наименьшее число> <наибольшее число>`", inline=False)
@@ -185,12 +190,12 @@ async def __ударить(ctx, member: discord.Member = None):
 # бот = инфа о авторе бота, ссылки и ссылка на донатик
 @bot.command()
 async def бот(ctx):
-    embed=discord.Embed(title=f"Артурия Пендрагон, бот клана TITAWIN", description="Версия бота: `0.0.5alpha`", color=0x4fff4d)
+    embed=discord.Embed(title=f"Артурия Пендрагон, бот клана TITAWIN", description="Версия бота: " + bot_version, color=0x4fff4d)
     embed.set_thumbnail(url="https://telegra.ph/file/e756263abab1ffa102c11.png")
     embed.add_field(name="Разработчик Бота", value="YokainFromAbyss#2300", inline=False)
     embed.add_field(name="Полезные ссылки", value="[Twitter](https://twitter.com/yokainlovesyou), [Клан TITAWIN](https://www.bungie.net/ru/ClanV2/Index?groupId=4406402), [Github](https://github.com/YokainFromAbyss)", inline=False)
     embed.add_field(name="Донат", value="[Закинуть монетку](https://www.donationalerts.com/r/yokainlovesyou)", inline=False)
-    embed.add_field(name="Благодарности", value="Ningi", inline=False)
+    embed.add_field(name="Благодарности", value="[Ningi](https://www.twitch.tv/n1ngi)\nHAPPYV0DKA#8354 (создатель бота [Indeedstor](https://top.gg/bot/677145368894373965))", inline=False)
     embed.set_footer(text="Ответ на сообщение от: {}".format(ctx.author.display_name))
     await ctx.author.send(embed=embed)
 
@@ -198,7 +203,7 @@ async def бот(ctx):
 @bot.command()
 @has_permissions(manage_roles=True)
 async def админка(ctx):
-    embed=discord.Embed(title=f":wave: Привет, {ctx.author.display_name}, это панель администратора'", description="Мой префикс: `>`.\n Моя версия на данный момент `0.0.5alpha`", color=0x4fff4d)
+    embed=discord.Embed(title=f":wave: Привет, {ctx.author.display_name}, это панель администратора'", description="Мой префикс: `>`.\n Моя версия на данный момент: " + bot_version, color=0x4fff4d)
     embed.set_thumbnail(url="https://telegra.ph/file/14f906d4ad15ba4ccc001.png")
     embed.add_field(name="Команды", value="`>роли @ник` - выдаёт Новичку роли для открытия сервера после собеседования;\n`>очистка <число>` - очищает чат от указанного количества сообщений;", inline=False)
     embed.set_footer(text="Ответ на сообщение от: {}".format(ctx.author.display_name))
