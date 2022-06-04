@@ -1,3 +1,4 @@
+from importlib.resources import path
 import discord
 import asyncio
 from asyncio import sleep
@@ -13,6 +14,8 @@ import random
 from discord import guild
 from discord import mentions
 import json
+from discord_components import DiscordComponents, ComponentsBot, Button
+
 
 #задаем префикс
 PREFIX = ('>')
@@ -56,25 +59,25 @@ async def on_member_join(member):
   await member.add_roles(role)
   print(f"{member} получил {role}")
 
-@bot.command()
+@bot.command(aliases = ['эхо'])
 @has_permissions(administrator=True)
-async def эхо(ctx):
-  author = ctx.message.author
-  await ctx.channel.send(ctx)
+async def say(ctx, *, phrase,):
+     await ctx.channel.send(phrase)
+     await ctx.message.delete()
 
 @bot.command()
 async def монетка(ctx):
-  coin = random.randint(0, 100)
-  if coin <= 10:
+  coin_x = random.randint(0, 100)
+  if coin_x <= 10:
     await ctx.channel.send("Монетка упала на ребро, перекидывай")
   else:
-    if (coin > 10 and coin < 46):
+    if (coin_x > 10 and coin_x < 46):
       await ctx.channel.send("У тебя решка!")
     else:
       await ctx.channel.send("У тебя орёл!")
 
-@bot.command()
-async def рандом(ctx, num1 = None, num2 = None):
+@bot.command(aliases=['рандом', 'РАНДОМ', 'RANDOM'])
+async def __random(ctx, num1 = None, num2 = None):
     author = ctx.message.author
     avatar = author.avatar_url
     if num1 != None:
@@ -94,9 +97,9 @@ async def рандом(ctx, num1 = None, num2 = None):
         await ctx.send('Вы не ввели наименьшее число')
 
 # выдает роли по команде при прохождении собеседования
-@bot.command(aliases=['роли', 'РОЛИ'], pass_context=True)
+@bot.command(aliases=['роли', 'РОЛИ', 'ROLES'])
 @has_permissions(manage_roles=True)
-async def __роли(ctx, member: discord.Member = None):
+async def __roles(ctx, member: discord.Member = None):
   role1 = get(member.guild.roles, name=classrole)
   role2 = get(member.guild.roles, name=specialrole)
   role3 = get(member.guild.roles, name=guardianrole)
@@ -111,42 +114,50 @@ async def __роли(ctx, member: discord.Member = None):
 #КОМАНДЫ
 # помощь - присылает автору инфу по боту и командам прямо в ЛС
 @bot.command(aliases=['помощь', 'ПОМОЩЬ'])
-async def __помощь(ctx):
-    embed=discord.Embed(title=f":wave: Привет, {ctx.author.display_name}, я Артурия из клана TITAWIN!", description="Мой префикс: `>`.\n Моя версия на данный момент: " + bot_version, color=0x4fff4d)
+async def __help(ctx):
+    embed=discord.Embed(title=f":wave: Привет, {ctx.author.display_name}, я Артурия из клана TITAWIN!", description="Мой префикс: `>`.\n Моя версия на данный момент: " + bot_version + "\n Информация о боте: `бот`", color=0x4fff4d)
     embed.set_thumbnail(url="https://telegra.ph/file/14f906d4ad15ba4ccc001.png")
-    embed.add_field(name="ИНФО", value="> `помощь`, `алиасы`, `бот`", inline=False)
-    embed.add_field(name="ОБЩЕНИЕ", value="> `ударить`, `да`, `нет`, `цитаты`, `монетка`, `рандом <наименьшее число> <наибольшее число>`", inline=False)
+    embed.add_field(name="Информация по командам", value="Чтобы получить информацию по конкретной команде, введите `>help <команда>` ", inline=False)
+    embed.add_field(name="ИНФО", value="> `помощь`, `бот`", inline=False)
+    embed.add_field(name="ОБЩЕНИЕ", value="> `ударить`, `монетка`, `рандом <наименьшее число> <наибольшее число>`", inline=False)
     embed.add_field(name="КЛАН", value="> `ссылки`", inline=False)
     embed.set_footer(text="Ответ на сообщение от: {}".format(ctx.author.display_name))
     await ctx.author.send(embed=embed)
 
-# кастомизация профиля на сервере. Позже надо будет переделать это в одну команду, а не городить три отдельных :/
-
-@bot.command(pass_context=True)
-@commands.has_role("Страж")
-async def охотник(ctx, member: discord.Member = None):
-  role_hunt = get(member.guild.roles, name=huntrole)
-  await member.add_roles(role_hunt)
-  await ctx.channel.send(f"Роли {member.mention} выданы", delete_after=4.0)
-
-@bot.command(pass_context=True)
-@commands.has_role("Страж")
-async def титан(ctx, member: discord.Member = None):
-  role_tit = get(member.guild.roles, name=titanrole)
-  await member.add_roles(role_tit)
-  await ctx.channel.send(f"Роли {member.mention} выданы", delete_after=4.0)
-
-@bot.command(pass_context=True)
-@commands.has_role("Страж")
-async def варлок(ctx, member: discord.Member = None):
-  role_war = get(member.guild.roles, name=warlockrole)
-  await member.add_roles(role_war)
-  await ctx.channel.send(f"Роли {member.mention} выданы", delete_after=4.0)
+# @bot.command(aliases=['помощь', 'ПОМОЩЬ'])
+# async def __help(ctx, *, com = None):
+#   embed = discord.Embed(
+#         color = 0x4fff4d,
+#         title = f":wave: Привет, {ctx.author.display_name}, я Артурия из клана TITAWIN!",
+#         description = "Мой префикс: `>`.\n Моя версия: " + bot_version,
+#   ),
+#   embed.add_field(name="Информация по командам", value="Чтобы получить информацию по конкретной команде, введите `>help <команда>` ", inline=False),
+#   embed.set_thumbnail(url="https://telegra.ph/file/14f906d4ad15ba4ccc001.png")
+#   if com is None:
+#     await ctx.author.send (embed=embed,
+#     ),
+#     embed.add_field(name="ИНФО", value="> `помощь`, `бот`", inline=False),
+#     embed.add_field(name="ОБЩЕНИЕ", value="> `ударить`, `монетка`, `рандом <наименьшее число> <наибольшее число>`", inline=False),
+#     embed.add_field(name="КЛАН", value="> `ссылки`", inline=False),
+#     embed.set_footer(text="Ответ на сообщение от: {}".format(ctx.author.display_name))
+#   else:
+#     if com == 'бот':
+#       embbod = discord.Embed(
+#         title = "Информация о команде `>бот`",
+#         description = "Выводит информацию о Артурии, ее разработчике и полезные ссылки",
+#         color = 0x4fff4d
+#       )
+#     elif com == 'ударить':
+#       embpun = discord.Embed(
+#         title = "Информация о команде `>ударить @ник`",
+#         description = "Альтернатива обычному пингу пользователя",
+#         color = 0x4fff4d
+#       )
 
 # очистка - чистит указанное количество сообщений в чате
-@bot.command(pass_context=True)
+@bot.command(aliases=['очистка', 'чистка', 'очистить', 'CLEAN', 'ОЧИСТКА', 'ЧИСТКА', 'ОЧИСТИТЬ', 'вилка'])
 @has_permissions(manage_roles=True)
-async def очистка(ctx, limit):
+async def __clean(ctx, limit):
     await ctx.message.delete()
     limit = int(limit)
     deleted = await ctx.channel.purge(limit=limit)
@@ -155,21 +166,22 @@ async def очистка(ctx, limit):
 
 
 # ссылки - отправляет автору сообщения ссылки на клан в ЛС
-@bot.command(aliases=['ссылки', 'ССЫЛКИ', 'links', 'LINKS'])
-async def __ссылки(ctx):
-  emb = discord.Embed(title="Привет!\nВот ссылки на наш клан:", color=0x4fff4d)
-  emb.description = ':white_small_square:[Bungie.net](https://www.bungie.net/ru/ClanV2/Index?groupId=4406402)\n:white_small_square:[Discord](https://discord.gg/zAewvnTp3X)'
+@bot.command(aliases=['ссылки', 'ССЫЛКИ', 'LINKS'])
+async def __links(ctx):
+  emb = discord.Embed(title="Привет!", color=0x4fff4d)
+  emb.set_thumbnail(url="https://telegra.ph/file/e756263abab1ffa102c11.png")
+  emb.add_field(name="Вот наши ссылочки:", value=":white_small_square:[Bungie.net](https://www.bungie.net/ru/ClanV2/Index?groupId=4406402)\n:white_small_square:[Discord](https://discord.gg/zAewvnTp3X)\n:white_small_square:[Тут мы играем в Тарков](https://discord.gg/ZSSMyPGeaf)")
+  emb.set_footer(text="Ответ на сообщение от: {}".format(ctx.author.display_name))
   await ctx.author.send(embed=emb)
 
-
 # ударить - автор упоминает другого юзера, на что бот удаляет сообщение автора и в РП-форме выводит сценку с участием автора и целевого юзера
-@bot.command(aliases=['ударить', 'УДАРИТЬ'])
-async def __ударить(ctx, member: discord.Member = None):
-  global punch
-  punch = [" но промахивается", " и попадает прям в глаз"]
+@bot.command(aliases=['ударить', 'УДАРИТЬ', 'PUNCH'])
+async def __punch(ctx, member: discord.Member = None):
+  global punch_list
+  punch_list = [" но промахивается", " и попадает прям в глаз"]
   global fireball
   fireball = [f" в {member.mention}, но он почему-то гаснет на полпути.", f". {member.mention} ловит его лицом и загорается!"]
-  arg1 = f"{ctx.author.mention} пытается ударить {member.mention}," + (random.choice(punch))
+  arg1 = f"{ctx.author.mention} пытается ударить {member.mention}," + (random.choice(punch_list))
   arg2 = f"{ctx.author.mention} стукает {member.mention}!"
   arg3 = f"{ctx.author.mention} кидает палку в {member.mention} и попадает в лицо."
   arg4 = f"{ctx.author.mention} кастует фаерболл" + (random.choice(fireball))
@@ -181,15 +193,15 @@ async def __ударить(ctx, member: discord.Member = None):
   arg10 = f"{ctx.author.mention} пытается вызвать чуму у {member.mention}, но тут же начинает чихать."
   arg11 = f"{ctx.author.mention} делает бэкстаб {member.mention}. Watch your ass!"
   arg12 = f"{ctx.author.mention} прописывает красочную вертуху по лицу {member.mention}"
-  test_list = [arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9, arg10, arg11, arg12]
+  arg_list = [arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9, arg10, arg11, arg12]
   if member == None:
       return
-  await ctx.channel.send(random.choice(test_list))
+  await ctx.channel.send(random.choice(arg_list))
   await ctx.message.delete()
 
 # бот = инфа о авторе бота, ссылки и ссылка на донатик
-@bot.command()
-async def бот(ctx):
+@bot.command(aliases=['бот', 'БОТ', 'BOT'])
+async def __bot(ctx):
     embed=discord.Embed(title=f"Артурия Пендрагон, бот клана TITAWIN", description="Версия бота: " + bot_version, color=0x4fff4d)
     embed.set_thumbnail(url="https://telegra.ph/file/e756263abab1ffa102c11.png")
     embed.add_field(name="Разработчик Бота", value="YokainFromAbyss#2300", inline=False)
@@ -200,13 +212,69 @@ async def бот(ctx):
     await ctx.author.send(embed=embed)
 
 # панель администратора
-@bot.command()
+@bot.command(aliases=['админка', 'АДМИНКА', 'ADMIN'])
 @has_permissions(manage_roles=True)
-async def админка(ctx):
+async def __admin(ctx):
     embed=discord.Embed(title=f":wave: Привет, {ctx.author.display_name}, это панель администратора'", description="Мой префикс: `>`.\n Моя версия на данный момент: " + bot_version, color=0x4fff4d)
     embed.set_thumbnail(url="https://telegra.ph/file/14f906d4ad15ba4ccc001.png")
     embed.add_field(name="Команды", value="`>роли @ник` - выдаёт Новичку роли для открытия сервера после собеседования;\n`>очистка <число>` - очищает чат от указанного количества сообщений;", inline=False)
     embed.set_footer(text="Ответ на сообщение от: {}".format(ctx.author.display_name))
     await ctx.author.send(embed=embed)
-  
+
+# рейдовые команды
+
+@bot.command()
+async def гайд(ctx, *, raid = None):
+  if raid is None:
+    await ctx.channel.send('Введите `>рейд (нужный рейд)`. Сейчас доступны: `пж`, `сс`, `сгк`, `кп`')
+  else:
+    if raid == 'пж':
+      embed=discord.Embed(title="ПОСЛЕДНЕЕ ЖЕЛАНИЕ", description="Информация, необходимая для прохождения рейда.", color=0x4fff4d)
+      embed.set_thumbnail(url="https://www.bungie.net/img/theme/destiny/icons/fireteams/fireteam_LastWish.png")
+      embed.add_field(name="Список желаний:", value="**[Ссылка](https://telegra.ph/Spisok-zhelanij-Poslednee-ZHelanie-04-26)**", inline=False)
+      embed.add_field(name="Первый этап. Техноведьма Калли:", value="**[Видео](https://youtu.be/6OClV3FA0ME)\n[Карта этапа](https://cdn.discordapp.com/attachments/951876826454704168/968564674889146408/44dcd70c4d12c144.png)**", inline=False)
+      embed.add_field(name="Второй этап. Техноведьма Шуро Чи:", value="**[Видео](https://youtu.be/E8iscYWSvuA)\n[Гифка по прохождению телефона](https://cdn.discordapp.com/attachments/951876826454704168/968570665231859772/fpsp6ce_1.gif)**", inline=False)
+      embed.add_field(name="Третий этап. Огр Моргет:", value="**[Видео](https://www.youtube.com/watch?v=yXWL35lzHhA)**", inline=False)
+      embed.add_field(name="Четвертый этап. Хранилище:", value="**[Видео](https://www.youtube.com/watch?v=A0MuTKlja7c)\n[Карта этапа](https://cdn.discordapp.com/attachments/951876826454704168/968572250531971122/unknown.png)**\n***Подсказка:***\nСимвол слева - у вас полутьма;\nСимвол справа - у вас полусвет;", inline=False)
+      embed.add_field(name="Финальный босс. Тысячеголосая Ривен:", value="**[Видео](https://www.youtube.com/watch?v=di5qdvKTnnQ)\n[Быстрый способ](https://www.youtube.com/watch?v=Ui1MT1ZUUX8&t=1366s)**", inline=False)
+      embed.set_footer(text="Удачи тебе в рейде, {}".format(ctx.author.display_name))
+      embed.set_image(url="https://assets.reedpopcdn.com/destiny-2-last-wish-raid-start-time-rewards-5382-1536929323933.jpg/BROK/resize/1200x1200%3E/format/jpg/quality/70/destiny-2-last-wish-raid-start-time-rewards-5382-1536929323933.jpg")
+      await ctx.author.send(embed=embed)
+    elif raid == 'сс':
+      embed=discord.Embed(title="САД СПАСЕНИЯ", description="Информация, необходимая для прохождения рейда.", color=0x4fff4d)
+      embed.set_thumbnail(url="https://www.bungie.net/img/theme/destiny/icons/fireteams/fireteam_GardenOfSalvation.png")
+      embed.add_field(name="Первый этап:", value="**[Видео](https://www.youtube.com/watch?v=AI5dZzBYlMg)**", inline=False)
+      embed.add_field(name="Второй этап:", value="**[Видео](https://www.youtube.com/watch?v=N-T0HHj28VI)**", inline=False)
+      embed.add_field(name="Третий этап:", value="**[Видео](https://www.youtube.com/watch?v=H9mZ0vGBzY4)**", inline=False)
+      embed.add_field(name="Финальный босс:", value="**[Видео](https://www.youtube.com/watch?v=wPCaw0FbeAk)**\n**[Карта этапа](https://i.imgur.com/iEIEy6X.png)**", inline=False)
+      embed.add_field(name="Гайд на триумфы:", value="**[Видео](https://youtu.be/43fe3Zmru3U)**", inline=False)
+      embed.add_field(name="Квест на Божественность:", value="**[Видео](https://youtu.be/d8K9tCjYXJE)**", inline=False)
+      embed.set_footer(text="Удачи тебе в рейде, {}".format(ctx.author.display_name))
+      embed.set_image(url="https://www.vgr.com/wp-content/uploads/2019/09/destiny-2-shadowkeep-garden-of-salvation-3.jpg")
+      await ctx.author.send(embed=embed)
+    elif raid == 'сгк':
+      embed=discord.Embed(title="СКЛЕП ГЛУБОКОГО КАМНЯ", description="Информация, необходимая для прохождения рейда.", color=0x4fff4d)
+      embed.set_thumbnail(url="https://www.bungie.net/img/theme/destiny/icons/fireteams/fireteam_DeepStoneCrypt.png")
+      embed.add_field(name="Предэтап:", value="**[Видео](https://www.youtube.com/watch?v=hpLumgP08eE&t=73s)\n[Карта (большая)](https://ibb.co/CQJghCd)**", inline=False)
+      embed.add_field(name="Первый этап:", value="**[Видео](https://www.youtube.com/watch?v=hpLumgP08eE&t=291s)\n[Карта](https://imgur.com/7oQStDq)**", inline=False)
+      embed.add_field(name="Второй этап:", value="**[Видео](https://www.youtube.com/watch?v=hpLumgP08eE&t=601s)**", inline=False)
+      embed.add_field(name="Третий этап:", value="**[Видео](https://www.youtube.com/watch?v=hpLumgP08eE&t=1453s)**", inline=False)
+      embed.add_field(name="Финальный босс:", value="**[Видео](https://www.youtube.com/watch?v=hpLumgP08eE&t=2078s)**", inline=False)
+      embed.set_footer(text="Удачи тебе в рейде, {}".format(ctx.author.display_name))
+      embed.set_image(url="https://api.dving.org/media/image/28/29/39ff9ee007bf5bb887fb6697b35c.png")
+      await ctx.author.send(embed=embed)
+    elif raid == 'кп':
+      embed=discord.Embed(title="КЛЯТВА ПОСЛУШНИКА", description="Информация, необходимая для прохождения рейда.", color=0x4fff4d)
+      embed.set_thumbnail(url="https://cdn.discordapp.com/attachments/981450909278150666/981450938101420062/unknown.png")
+      embed.add_field(name="Символы:", value="[Картинка](https://media.discordapp.net/attachments/981450909278150666/982754245705097277/unknown.png)", inline=True)
+      embed.add_field(name="Гайд по сундуку:", value="[Картинка](https://ibb.co/qY5BVpj)", inline=True)
+      embed.add_field(name="Предэтап:", value="[Видео](https://www.youtube.com/watch?v=KPecQIsSewU&t=0s)", inline=False)
+      embed.add_field(name="Первый этап:", value="[Видео](https://www.youtube.com/watch?v=KPecQIsSewU&t=37s)\n[Карта этапа](https://media.discordapp.net/attachments/951876826454704168/968549500580950046/unknown.png)", inline=False)
+      embed.add_field(name="Второй этап:", value="[Видео](https://www.youtube.com/watch?v=KPecQIsSewU&t=198s)", inline=False)
+      embed.add_field(name="Третий этап:", value="[Видео](https://www.youtube.com/watch?v=KPecQIsSewU&t=442s)\n[Карта этапа](https://media.discordapp.net/attachments/981450909278150666/982756017282646066/unknown.png?width=1178&height=662)", inline=False)
+      embed.add_field(name="Финальный босс:", value="[Видео](https://www.youtube.com/watch?v=KPecQIsSewU&t=665s)\n[Карта этапа](https://media.discordapp.net/attachments/981450909278150666/982756339736526900/unknown.png?width=1178&height=662)", inline=False)
+      embed.set_footer(text="Удачи тебе в рейде, {}".format(ctx.author.display_name))
+      embed.set_image(url="https://oyster.ignimgs.com/mediawiki/apis.ign.com/destiny-2/f/f0/Votd.jpg")
+      await ctx.author.send(embed=embed)
+      
 bot.run('')
