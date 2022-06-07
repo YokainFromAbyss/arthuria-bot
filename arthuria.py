@@ -14,7 +14,16 @@ import random
 from discord import guild
 from discord import mentions
 import json
-from discord_components import DiscordComponents, ComponentsBot, Button
+
+
+# Шаблоны:
+
+# if com_name == '':
+#       embed = discord.embed(title="", description="", color=0x4fff4d)
+#       embed.set_thumbnail(url="https://telegra.ph/file/14f906d4ad15ba4ccc001.png")
+#       embed.add_field(name="", value="", inline=False)
+#       embed.set_footer(text="Ответ на сообщение от: {}".format(ctx.author.display_name))
+#       await ctx.author.send(embed=embed)
 
 
 #задаем префикс
@@ -32,21 +41,17 @@ titanrole = "Титан"
 warlockrole = "Варлок"
 global bot_version
 bot_version = "`0.0.6a`"
+global emojis
+emojis=None
 
 # СТАТУС
 # задаем варианты статуса бота в режиме онлайн
 @bot.event
 async def on_ready():
   while True:
-    await bot.change_presence(activity=discord.Activity(type=discord.ActivityType.listening, name="Гражданская Оборона"))
-    await sleep (30)
     await bot.change_presence(status=discord.Status.online, activity=discord.Game(name="Горнило", type=3))
     await sleep (30)
     await bot.change_presence(status=discord.Status.online, activity=discord.Game(name="Испытания Осириса", type=3))
-    await sleep (30)
-    await bot.change_presence(status=discord.Status.online, activity=discord.Game(name="Железное Знамя", type=3))
-    await sleep (30)
-    await bot.change_presence(status=discord.Status.online, activity=discord.Game(name="Genshin Impact", type=3))
     await sleep (30)
     await bot.change_presence(status=discord.Status.online, activity=discord.Game(name=">помощь", type=3))
     await sleep (30)
@@ -58,6 +63,8 @@ async def on_member_join(member):
   role = get(member.guild.roles, name=newbierole)
   await member.add_roles(role)
   print(f"{member} получил {role}")
+
+# команда для общения от лица бота // админка
 
 @bot.command(aliases = ['эхо'])
 @has_permissions(administrator=True)
@@ -76,6 +83,14 @@ async def монетка(ctx):
     else:
       await ctx.channel.send("У тебя орёл!")
 
+# @bot.command(pass_context=True)
+# async def ping(ctx):
+#     global emojis
+#     if not emojis:
+#         emojis = {e.name:str(e) for e in ctx.bot.emojis}
+#     msg = "Pong :Zavala_Facepalm: {0.author.mention}".format(ctx.message).replace(':Zavala_Facepalm:',emojis['Zavala_Facepalm'])
+#     await ctx.send(msg)
+
 @bot.command(aliases=['рандом', 'РАНДОМ', 'RANDOM'])
 async def __random(ctx, num1 = None, num2 = None):
     author = ctx.message.author
@@ -86,7 +101,7 @@ async def __random(ctx, num1 = None, num2 = None):
             y = int(num2)
             if x < y:
                 value = random.randint(x,y)
-                embed=discord.Embed(title='Случайное число', description=f'{author.mention}, вот ваше число: \n**{value}**', color=0x4fff4d)
+                embed=discord.Embed(title=':Zavala_Facepalm: Случайное число', description=f'{author.mention}, вот ваше число: \n**{value}**', color=0x4fff4d)
                 embed.set_author(name=f"{author}", icon_url=f"{avatar}")
                 await ctx.send(embed=embed)
             else:
@@ -96,7 +111,7 @@ async def __random(ctx, num1 = None, num2 = None):
     else:
         await ctx.send('Вы не ввели наименьшее число')
 
-# выдает роли по команде при прохождении собеседования
+# выдает роли по команде при прохождении собеседования // рекрутер
 @bot.command(aliases=['роли', 'РОЛИ', 'ROLES'])
 @has_permissions(manage_roles=True)
 async def __roles(ctx, member: discord.Member = None):
@@ -113,48 +128,45 @@ async def __roles(ctx, member: discord.Member = None):
 
 #КОМАНДЫ
 # помощь - присылает автору инфу по боту и командам прямо в ЛС
-@bot.command(aliases=['помощь', 'ПОМОЩЬ'])
-async def __help(ctx):
-    embed=discord.Embed(title=f":wave: Привет, {ctx.author.display_name}, я Артурия из клана TITAWIN!", description="Мой префикс: `>`.\n Моя версия на данный момент: " + bot_version + "\n Информация о боте: `бот`", color=0x4fff4d)
+
+@bot.command()
+async def помощь(ctx, *, com_name=None):
+  if com_name is None:
+    embed=discord.Embed(title="Полный список команд Артурии", description="Чтобы узнать информацию по конкретной команде, введите `>помощь <команда>", color=0x4fff4d)
     embed.set_thumbnail(url="https://telegra.ph/file/14f906d4ad15ba4ccc001.png")
-    embed.add_field(name="Информация по командам", value="Чтобы получить информацию по конкретной команде, введите `>help <команда>` ", inline=False)
     embed.add_field(name="ИНФО", value="> `помощь`, `бот`", inline=False)
-    embed.add_field(name="ОБЩЕНИЕ", value="> `ударить`, `монетка`, `рандом <наименьшее число> <наибольшее число>`", inline=False)
-    embed.add_field(name="КЛАН", value="> `ссылки`", inline=False)
+    embed.add_field(name="ОБЩЕНИЕ", value="> `ударить`, `монетка`, `рандом`", inline=False)
+    embed.add_field(name="КЛАН", value="> `ссылки`, `гайд`", inline=False)
     embed.set_footer(text="Ответ на сообщение от: {}".format(ctx.author.display_name))
     await ctx.author.send(embed=embed)
+  else:
+    if com_name == 'ударить':
+      embed=discord.Embed(title="Ударить", description="Упоминание пользователя в забавной ролевой сценке", color=0x4fff4d)
+      embed.set_thumbnail(url="https://telegra.ph/file/14f906d4ad15ba4ccc001.png")
+      embed.add_field(name="Использование", value="`>ударить @имя пользователя`", inline=False)
+      embed.set_footer(text="Ответ на сообщение от: {}".format(ctx.author.display_name))
+      await ctx.author.send(embed=embed)
+    elif com_name == 'монетка':
+      embed=discord.Embed(title="Монетка", description="Подброс монетки для решения споров", color=0x4fff4d)
+      embed.set_thumbnail(url="https://telegra.ph/file/14f906d4ad15ba4ccc001.png")
+      embed.add_field(name="Использование", value="`>монетка`", inline=False)
+      embed.set_footer(text="Ответ на сообщение от: {}".format(ctx.author.display_name))
+      await ctx.author.send(embed=embed)
+    elif com_name == 'рандом':
+      embed=discord.Embed(title="Рандом", description="Выбор случайного числа из выбранного диапазона", color=0x4fff4d)
+      embed.set_thumbnail(url="https://telegra.ph/file/14f906d4ad15ba4ccc001.png")
+      embed.add_field(name="Использование", value="`>рандом <наименьшее число> <наибольшее число>`\nПример: `>рандом 1 100`", inline=False)
+      embed.set_footer(text="Ответ на сообщение от: {}".format(ctx.author.display_name))
+      await ctx.author.send(embed=embed)
+    elif com_name == 'гайд':
+      embed=discord.Embed(title="Гайд", description="Запросить у бота гайд на прохождение рейда", color=0x4fff4d)
+      embed.set_thumbnail(url="https://telegra.ph/file/14f906d4ad15ba4ccc001.png")
+      embed.add_field(name="Использование", value="`>гайд <сокращенное название рейда>`", inline=False)
+      embed.add_field(name="Названия рейдов", value="Последнее желание - `пж`\nСад Спасения - `сс`\nСклеп Глубокого Камня - `сгк`\nКлятва Послушника - `кп`\n", inline=False)
+      embed.set_footer(text="Ответ на сообщение от: {}".format(ctx.author.display_name))
+      await ctx.author.send(embed=embed)
 
-# @bot.command(aliases=['помощь', 'ПОМОЩЬ'])
-# async def __help(ctx, *, com = None):
-#   embed = discord.Embed(
-#         color = 0x4fff4d,
-#         title = f":wave: Привет, {ctx.author.display_name}, я Артурия из клана TITAWIN!",
-#         description = "Мой префикс: `>`.\n Моя версия: " + bot_version,
-#   ),
-#   embed.add_field(name="Информация по командам", value="Чтобы получить информацию по конкретной команде, введите `>help <команда>` ", inline=False),
-#   embed.set_thumbnail(url="https://telegra.ph/file/14f906d4ad15ba4ccc001.png")
-#   if com is None:
-#     await ctx.author.send (embed=embed,
-#     ),
-#     embed.add_field(name="ИНФО", value="> `помощь`, `бот`", inline=False),
-#     embed.add_field(name="ОБЩЕНИЕ", value="> `ударить`, `монетка`, `рандом <наименьшее число> <наибольшее число>`", inline=False),
-#     embed.add_field(name="КЛАН", value="> `ссылки`", inline=False),
-#     embed.set_footer(text="Ответ на сообщение от: {}".format(ctx.author.display_name))
-#   else:
-#     if com == 'бот':
-#       embbod = discord.Embed(
-#         title = "Информация о команде `>бот`",
-#         description = "Выводит информацию о Артурии, ее разработчике и полезные ссылки",
-#         color = 0x4fff4d
-#       )
-#     elif com == 'ударить':
-#       embpun = discord.Embed(
-#         title = "Информация о команде `>ударить @ник`",
-#         description = "Альтернатива обычному пингу пользователя",
-#         color = 0x4fff4d
-#       )
-
-# очистка - чистит указанное количество сообщений в чате
+# очистка - чистит указанное количество сообщений в чате // рекрутер
 @bot.command(aliases=['очистка', 'чистка', 'очистить', 'CLEAN', 'ОЧИСТКА', 'ЧИСТКА', 'ОЧИСТИТЬ', 'вилка'])
 @has_permissions(manage_roles=True)
 async def __clean(ctx, limit):
@@ -163,7 +175,6 @@ async def __clean(ctx, limit):
     deleted = await ctx.channel.purge(limit=limit)
     cofirmdelete_embed = discord.Embed(title='Удалено', description=f'Удалено **{len(deleted)}** сообщений в **#{ctx.channel}**', color=0x4fff4d)
     await ctx.channel.send(embed=cofirmdelete_embed, delete_after=4.0)
-
 
 # ссылки - отправляет автору сообщения ссылки на клан в ЛС
 @bot.command(aliases=['ссылки', 'ССЫЛКИ', 'LINKS'])
@@ -211,7 +222,7 @@ async def __bot(ctx):
     embed.set_footer(text="Ответ на сообщение от: {}".format(ctx.author.display_name))
     await ctx.author.send(embed=embed)
 
-# панель администратора
+# панель администратора // админка
 @bot.command(aliases=['админка', 'АДМИНКА', 'ADMIN'])
 @has_permissions(manage_roles=True)
 async def __admin(ctx):
