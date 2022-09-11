@@ -11,11 +11,10 @@ from discord.ext.commands import has_permissions, MissingPermissions
 from discord import guild
 from discord import mentions
 
-from unicodedata import name
 from asyncio import sleep
-import random
 import yaml
 import logging
+import os
 
 # Init logger
 logger = logging.getLogger('discord')
@@ -30,7 +29,7 @@ with open('config.yaml') as f:
 
 intents = discord.Intents.default()
 intents.message_content = True
-bot = discord.Bot(intents=intents)
+bot = commands.Bot(intents=intents)
 
 
 # servers = [774157527083646976]
@@ -48,24 +47,29 @@ async def on_ready():
         await sleep(30)
 
 
-
-
 # @bot.command(aliases = ['эхо'])
 # @has_permissions(administrator=True)
 # async def say(ctx, *, phrase,):
 #      await ctx.channel.send(phrase)
 #      await ctx.message.delete()
 
-@bot.slash_command(name="монетка", description="Подбрось монетку и узнаешь свою судьбу!")
-async def coin(ctx):
-    coin_x = random.randint(0, 100)
-    if coin_x <= 10:
-        await ctx.send_reply("Монетка упала на ребро, перекидывай")
-    else:
-        if (coin_x > 10 and coin_x < 46):
-            await ctx.send_reply("У тебя решка!")
-        else:
-            await ctx.send_reply("У тебя орёл!")
 
+# @bot.slash_command(name="монетка", description="Подбрось монетку и узнаешь свою судьбу!")
+# async def coin(ctx):
+#     coin_x = random.randint(0, 100)
+#     if coin_x <= 10:
+#         await ctx.respond("Монетка упала на ребро, перекидывай")
+#     else:
+#         if (coin_x > 10 and coin_x < 46):
+#             await ctx.respond("У тебя решка!")
+#         else:
+#             await ctx.respond("У тебя орёл!")
+
+
+# Insert all commands
+for f in os.listdir("./commands"):
+    if f.endswith(".py"):
+        print(f'Add command {"commands." + f[:-3]}')
+        bot.load_extension("commands." + f[:-3])
 
 bot.run(config['token'])
