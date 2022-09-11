@@ -1,13 +1,15 @@
+python main.py &
+LAST_PID=$!
+
 while true
 do
-  python main.py &
-  LAST_PID=$!
-
   read -r interrupt
   if [ "$interrupt" == "reboot" ]
   then
     echo "Reboot bot"
     kill $LAST_PID
+    python main.py &
+    LAST_PID=$!
   fi
   if [ "$interrupt" == "exit" ]
   then

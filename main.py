@@ -15,7 +15,6 @@ from unicodedata import name
 from asyncio import sleep
 import random
 import yaml
-import json
 import logging
 
 # Init logger
@@ -29,7 +28,9 @@ logger.addHandler(handler)
 with open('config.yaml') as f:
     config = yaml.load(f, Loader=yaml.FullLoader)
 
-bot = discord.Bot(intents=discord.Intents.all())
+intents = discord.Intents.default()
+intents.message_content = True
+bot = discord.Bot(intents=intents)
 
 
 # servers = [774157527083646976]
@@ -37,16 +38,16 @@ bot = discord.Bot(intents=discord.Intents.all())
 
 @bot.event
 async def on_ready():
-    while True:
-        await bot.change_presence(status=discord.Status.online, activity=discord.Game(name="Горнило", type=3))
-        await sleep(30)
-        await bot.change_presence(status=discord.Status.online, activity=discord.Game(name="Испытания Осириса", type=3))
-        await sleep(30)
-        await bot.change_presence(status=discord.Status.online, activity=discord.Game(name=">помощь", type=3))
-        await sleep(30)
+    print(f"Я вошла")
+    # while True:
+    #     await bot.change_presence(status=discord.Status.online, activity=discord.Game(name="Горнило", type=3))
+    #     await sleep(30)
+    #     await bot.change_presence(status=discord.Status.online, activity=discord.Game(name="Испытания Осириса", type=3))
+    #     await sleep(30)
+    #     await bot.change_presence(status=discord.Status.online, activity=discord.Game(name=">помощь", type=3))
+    #     await sleep(30)
 
 
-print(f"Я вошла под {bot.user}")
 
 
 # @bot.command(aliases = ['эхо'])
