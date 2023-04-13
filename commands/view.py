@@ -17,10 +17,12 @@ def roles_getter(roles, role_name):
         if r.name == role_name:
             return r
 
+
 def embed_regen(description, roles):
     for r in roles:
         description = description + '\n<@&' + str(r) + '>'
     return description
+
 
 class Selection(discord.ui.Select):
     def __init__(self, roles):
@@ -59,7 +61,7 @@ class View(commands.Cog):
         with io.open('./resources/pepe_roles_list.json', encoding='utf-8', mode='r') as f:
             ids = json.load(f)['roles']
             role_list = [item for item in ctx.guild.roles if item.id in ids]
-            embed=json_reader.roles_embed()
+            embed = json_reader.roles_embed()
             embed.description = embed_regen(embed.description, ids)
             await ctx.send(embed=embed, view=SelectView(role_list, timeout=None))
             await ctx.respond("y", delete_after=0)
