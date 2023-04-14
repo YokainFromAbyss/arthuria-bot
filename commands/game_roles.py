@@ -53,11 +53,11 @@ class GameRoles(commands.Cog):
         self.bot.application_command(
             name="game_roles",
             description="Admin Only!",
-            cls=discord.SlashCommand)(self.view_slash)
+            cls=discord.SlashCommand)(self.game_view_slash)
 
     @commands.command()
     @has_permissions(administrator=True)
-    async def view(self, ctx):
+    async def game_view(self, ctx):
         with io.open('./resources/game_roles_list.json', encoding='utf-8', mode='r') as f:
             data = json.load(f)
             roles = data['roles']
@@ -68,8 +68,8 @@ class GameRoles(commands.Cog):
             await ctx.send(embed=embed, view=SelectView(role_list, timeout=None))
             await ctx.respond("y", delete_after=0)
 
-    async def view_slash(self, ctx):
-        await self.view(ctx)
+    async def game_view_slash(self, ctx):
+        await self.game_view(ctx)
 
 
 def setup(bot):
