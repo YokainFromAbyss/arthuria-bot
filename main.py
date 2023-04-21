@@ -1,8 +1,6 @@
 import logging
 from logging.handlers import TimedRotatingFileHandler
 import os
-import random
-from asyncio import sleep
 
 import discord
 import yaml
@@ -33,20 +31,6 @@ bot = commands.Bot(intents=intents)
 @bot.event
 async def on_ready():
     print(f"Я вошла {bot.user}")
-    # Играет в
-    game_roulette = [
-        "Горнило",
-        "Испытания Осириса",
-        "очко с крысой",
-        "могилу",
-        "Гамбит",
-        "своей попке",
-    ]
-    while True:
-        ind = random.randint(1, len(game_roulette))
-        await bot.change_presence(status=discord.Status.online,
-                                  activity=discord.Game(name=game_roulette[ind - 1], type=3))
-        await sleep(60)
 
 
 # Insert all commands
