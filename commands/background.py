@@ -2,6 +2,8 @@ import discord
 from discord.ext import commands, tasks
 import random
 
+from commands.utils.bunge_api import load_news
+
 
 class Background(commands.Cog):
 
@@ -15,11 +17,16 @@ class Background(commands.Cog):
             "могилу",
             "Гамбит",
             "своей попке",
+            "DnD",
         ]
-        self.del_message = "[Original Message Deleted]"
-        self.cp_channel = 1053280305852719125
         self.status.start()
+
+        self.del_message = "[Original Message Deleted]"
+        self.cp_channel = 1053280305852719125  # чекпоинты
         self.checkpoint_cleaner.start()
+
+        self.content_channel = 1050041513712824330  # контент
+        self.news_lookup.start()
 
     @tasks.loop(seconds=60)
     async def status(self):
@@ -35,8 +42,16 @@ class Background(commands.Cog):
             if m.content == self.del_message:
                 await m.delete()
 
+    @tasks.loop(minutes=10)
+    async def news_lookup(self):
+        channel = self.bot.get_channel(self.content_channel)
+        links = load_news()
+        for link in links:
+            await channel.send("Новая статья на bungie.net\n" + link)
+
     @status.before_loop
     @checkpoint_cleaner.before_loop
+    @news_lookup.before_loop
     async def before_background(self):
         await self.bot.wait_until_ready()
 
