@@ -1,2 +1,6 @@
 token: ""
 api-key: ""
+dbname: ""
+dbuser: ""
+dbpassword: ""
+dbhost: ""
