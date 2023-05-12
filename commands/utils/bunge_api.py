@@ -37,8 +37,11 @@ def load_news():
     cursor.close()
     conn.close()
 
+    # print(last_pull)
     for n in news:
         date = datetime.datetime.strptime(n['PubDate'], "%Y-%m-%dT%H:%M:%SZ")
+        # print(n['Link'], date)
+        # print(date >= last_pull)
         if date >= last_pull:
             links.append("https://www.bungie.net" + n['Link'])
     return links
