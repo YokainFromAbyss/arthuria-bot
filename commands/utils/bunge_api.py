@@ -1,7 +1,8 @@
 import requests
 import datetime
-import psycopg2
 import yaml
+
+from commands.utils.sql_storage import last_news
 
 
 def load_news():
@@ -16,26 +17,7 @@ def load_news():
     resp = r.json()
     news = resp['Response']['NewsArticles']
 
-    last_pull = datetime.datetime.utcnow()
-    conn = psycopg2.connect(dbname=config['dbname'], user=config['dbuser'],
-                            password=config['dbpassword'], host=config['dbhost'])
-    conn.autocommit = True
-    cursor = conn.cursor()
-    cursor.execute("SELECT date_string FROM sync_dates WHERE sync_name='news';")
-    records = cursor.fetchall()
-    if len(records) == 0:
-        cursor.execute(
-            "INSERT INTO sync_dates (sync_name, date_string) VALUES ('news', %s);",
-            [last_pull]
-        )
-    else:
-        cursor.execute(
-            "UPDATE sync_dates SET date_string=%s WHERE sync_name='news';",
-            [last_pull]
-        )
-        last_pull = datetime.datetime.strptime(records[0][0], "%Y-%m-%d %H:%M:%S.%f")
-    cursor.close()
-    conn.close()
+    last_pull = last_news()
 
     # print(last_pull)
     for n in news:
