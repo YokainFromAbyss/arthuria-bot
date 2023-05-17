@@ -43,10 +43,13 @@ class Game(commands.Cog):
     @group.command(description='Играем?')
     async def roll(self, ctx):
         roll, winner = game_roll()
-        if roll:
-            await ctx.respond(f"**Пидор дня <@{winner}>!**")
+        if winner == -1:
+            await ctx.respond(f"**Пока никто не играет, ты можешь быть первым!**")
         else:
-            await ctx.respond(f"**Сегодня уже победил <@{winner}>**")
+            if roll:
+                await ctx.respond(f"**Пидор дня <@{winner}>!**")
+            else:
+                await ctx.respond(f"**Сегодня уже победил <@{winner}>**")
 
 
 def setup(bot):

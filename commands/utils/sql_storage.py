@@ -90,6 +90,8 @@ def game_roll():
                 cursor.execute("UPDATE day_game_list SET today_winner = false WHERE today_winner = true")
                 cursor.execute("SELECT member_id FROM day_game_list WHERE now_active = true;")
                 res = cursor.fetchall()
+                if len(res) == 0:
+                    return False, -1
                 winner_id = res[random.randrange(len(res))][0]
                 cursor.execute(
                     "UPDATE day_game_list SET win_count = win_count + 1, today_winner = true WHERE member_id = %s;",
