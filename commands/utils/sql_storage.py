@@ -2,6 +2,7 @@ import datetime
 import psycopg2
 import yaml
 import random
+from dateutil.parser import *
 
 
 def connection():
@@ -14,7 +15,7 @@ def connection():
     return conn
 
 
-def last_news():
+def last_news_pull():
     last_pull = datetime.datetime.utcnow()
     with connection() as conn:
         with conn.cursor() as cursor:
@@ -26,12 +27,17 @@ def last_news():
                     [last_pull]
                 )
             else:
-                cursor.execute(
-                    "UPDATE sync_dates SET date_string = %s WHERE sync_name='news';",
-                    [last_pull]
-                )
-                last_pull = datetime.datetime.strptime(records[0][0], "%Y-%m-%d %H:%M:%S.%f")
+                last_pull = parse(records[0][0])
             return last_pull
+
+
+def update_news_pull(pull_date: datetime.datetime):
+    with connection() as conn:
+        with conn.cursor() as cursor:
+            cursor.execute(
+                "UPDATE sync_dates SET date_string = %s WHERE sync_name='news';",
+                [pull_date]
+            )
 
 
 def game_register(member_id: str):
@@ -70,18 +76,10 @@ def game_roll():
             cursor.execute("SELECT date_string FROM sync_dates WHERE sync_name='gay_game';")
             records = cursor.fetchall()
             if len(records) == 0:
-                cursor.execute(
-                    "INSERT INTO sync_dates (sync_name, date_string) VALUES ('gay_game', %s);",
-                    [today]
-                )
                 roll = True
             else:
                 last_roll = datetime.datetime.strptime(records[0][0], "%Y-%m-%d").date()
                 if today > last_roll:
-                    cursor.execute(
-                        "UPDATE sync_dates SET date_string = %s WHERE sync_name='gay_game';",
-                        [today]
-                    )
                     roll = True
 
     if roll:
@@ -94,9 +92,17 @@ def game_roll():
                     return False, -1
                 winner_id = res[random.randrange(len(res))][0]
                 cursor.execute(
-                    "UPDATE day_game_list SET win_count = win_count + 1, today_winner = true WHERE member_id = %s;",
+                    "UPDATE day_game_list SET win_count = win_count + 1, today_winner = true WHERE member_id = %s",
                     [str(winner_id)]
                 )
+
+                cursor.execute(
+                    """INSERT INTO sync_dates (sync_name, date_string) VALUES ('gay_game', %s) ON CONFLICT (sync_name) 
+                    DO UPDATE SET date_string = %s;
+                    """,
+                    [today, today]
+                )
+
                 return roll, winner_id
     else:
         with connection() as conn:

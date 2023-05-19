@@ -1,8 +1,9 @@
-import requests
 import datetime
+import requests
 import yaml
+from dateutil.parser import *
 
-from commands.utils.sql_storage import last_news
+from commands.utils.sql_storage import last_news_pull, update_news_pull
 
 
 def load_news():
@@ -17,13 +18,14 @@ def load_news():
     resp = r.json()
     news = resp['Response']['NewsArticles']
 
-    last_pull = last_news()
+    last_pull = last_news_pull()
+    dates = []
 
-    # print(last_pull)
     for n in news:
-        date = datetime.datetime.strptime(n['PubDate'], "%Y-%m-%dT%H:%M:%SZ")
-        # print(n['Link'], date)
-        # print(date >= last_pull)
-        if date >= last_pull:
+        date = parse(n['PubDate'])
+        if date.timestamp() > last_pull.timestamp():
+            dates.append(date)
             links.append("https://www.bungie.net" + n['Link'])
+    if len(links) > 0:
+        update_news_pull(max(dates))
     return links
