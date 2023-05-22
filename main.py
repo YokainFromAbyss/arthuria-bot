@@ -22,16 +22,11 @@ with open('./resources/config.yaml') as f:
 
 intents = discord.Intents.default()
 intents.message_content = True
+intents.members = True
 bot = commands.Bot(intents=intents)
 
 
 # servers = [774157527083646976]
-
-
-@bot.event
-async def on_ready():
-    print(f"Я вошла {bot.user}")
-
 
 # Insert all commands
 for f in os.listdir("./commands"):

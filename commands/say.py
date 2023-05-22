@@ -1,6 +1,5 @@
 import json
 
-import discord
 from discord import Embed
 from discord.ext import commands
 from discord.ext.commands import has_permissions
@@ -9,14 +8,19 @@ import re
 
 
 class Say(commands.Cog):
+    r"""
+    Выводит текст что передан в параметр message
+    Если текст начинается с '{', то превращает его в Embed
+    Все переводы строк должны быть указаны через \n
+    """
+
     def __init__(self, bot):
         self.bot = bot
-        self.bot.application_command(
-            name="say",
-            description="Text or Embed. Use \n to new line",
-            cls=discord.SlashCommand)(self.say_slash)
 
-    @commands.command()
+    @commands.slash_command(
+        name="say",
+        description="Text or Embed. Use \\n to new line",
+    )
     @has_permissions(administrator=True)
     async def say(self, ctx, message: Option(str, required=True)):
         if message.startswith('{'):
@@ -27,11 +31,7 @@ class Say(commands.Cog):
         else:
             message = message.replace('\\n', '\n')
             await ctx.send(message)
-
-        await ctx.respond("<:Hahaeblan:1085526972458860645>", delete_after=0)
-
-    async def say_slash(self, ctx, message: str):
-        await self.say(ctx, message)
+        await ctx.interaction.response.send_message("<:Hahaeblan:1085526972458860645>", delete_after=0, ephemeral=True)
 
 
 def setup(bot):
