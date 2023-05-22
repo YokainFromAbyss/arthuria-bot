@@ -28,3 +28,9 @@ class RoleSelection(discord.ui.Select):
         else:
             await interaction.user.add_roles(role)
         await interaction.message.edit(view=self.view)
+
+
+class SelectView(discord.ui.View):
+    def __init__(self, selector, timeout):
+        super().__init__(timeout=timeout)
+        self.add_item(selector)

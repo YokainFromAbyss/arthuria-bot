@@ -7,6 +7,9 @@ from commands.utils.sql_storage import *
 
 
 class Game(commands.Cog):
+    r"""
+    Команды для великолепной игры 'Пидор дня'
+    """
     group = discord.SlashCommandGroup("game", "Day game group")
 
     def __init__(self, bot):
