@@ -4,3 +4,14 @@ dbname: ""
 dbuser: ""
 dbpassword: ""
 dbhost: ""
+registration:
+  channel: 1050035651833245806
+  safe-user: 828261204387823666
+  kick-role: 1051800833450319892
+  unkick-roles:
+    - 1051800832082972752 # страж
+    - 1051800834289172490 # друх
+    - 1050031050245546026 # бот
+  timeout-hours:
+    clean: 24
+    kick: 48
