@@ -22,15 +22,19 @@ class Background(commands.Cog):
             "DnD",
             "хентай пазлы",
         ]
+        self.status.add_exception_type(Exception)
         self.status.start()
         # del message cleaner
         self.del_message = "[Original Message Deleted]"
         self.channels = [1053280305852719125, 1069550535331553340]  # чекпоинты, сборы p2p
+        self.del_message_cleaner.add_exception_type(Exception)
         self.del_message_cleaner.start()
         # Bungie news posts
         self.content_channel = 1050041513712824330  # контент
+        self.news_lookup.add_exception_type(Exception)
         self.news_lookup.start()
         # cleanup AFK not registered members
+        self.registration_clean.add_exception_type(Exception)
         self.registration_clean.start()
 
     @tasks.loop(seconds=60)
