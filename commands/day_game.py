@@ -2,6 +2,7 @@ import discord
 from discord.ext import commands
 from discord.commands import Option
 from discord import Embed
+from discord.utils import get
 
 from commands.utils.sql_storage import *
 
@@ -18,16 +19,16 @@ class Game(commands.Cog):
     @group.command(description='Регистрация в великолепное казино!')
     async def register(self, ctx):
         if game_register(ctx.user.id):
-            await ctx.interaction.response.send_message("Успех!!", ephemeral=True)
+            await ctx.interaction.response.send_message("Успех!!", ephemeral=True, delete_after=15)
         else:
-            await ctx.interaction.response.send_message("Что-то сломалось, пинай одменов((", ephemeral=True)
+            await ctx.interaction.response.send_message("Что-то сломалось, пинай одменов((", ephemeral=True, delete_after=15)
 
     @group.command(description='Выйти из казино!')
     async def unregister(self, ctx):
         if game_unregister(ctx.user.id):
-            await ctx.interaction.response.send_message("До скорого!", ephemeral=True)
+            await ctx.interaction.response.send_message("До скорого!", ephemeral=True, delete_after=15)
         else:
-            await ctx.interaction.response.send_message("Что-то сломалось, пинай одменов((", ephemeral=True)
+            await ctx.interaction.response.send_message("Что-то сломалось, пинай одменов((", ephemeral=True, delete_after=15)
 
     @group.command(description='Топ везунчиков')
     async def top(self, ctx, count: Option(str, required=False, default=10)):
@@ -50,6 +51,13 @@ class Game(commands.Cog):
             await ctx.respond(f"**Пока никто не играет, ты можешь быть первым!**")
         else:
             if roll:
+                with open('./resources/config.yaml') as f:
+                    config = yaml.load(f, Loader=yaml.FullLoader)
+                role = ctx.user.guild.get_role(config['game-role'])
+                for m in role.members:
+                    m.remove_roles(role)
+                user = get(self.bot.get_all_members(), id=winner)
+                user.add_roles(role)
                 await ctx.respond(f"**Пидор дня <@{winner}>!**")
             else:
                 await ctx.respond(f"**Сегодня уже победил <@{winner}>**")
