@@ -23,6 +23,8 @@ with open('./resources/config.yaml') as f:
 intents = discord.Intents.default()
 intents.message_content = True
 intents.members = True
+intents.guilds = True
+intents.reactions = True
 bot = commands.Bot(intents=intents)
 
 
