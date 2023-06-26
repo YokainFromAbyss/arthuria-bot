@@ -56,6 +56,7 @@ class Game(commands.Cog):
                 role = ctx.user.guild.get_role(config['game-role'])
                 for m in role.members:
                     await m.remove_roles(role)
+                winner = int(winner)
                 user = get(self.bot.get_all_members(), id=winner)
                 await user.add_roles(role)
                 await ctx.respond(f"**Пидор дня <@{winner}>!**")
