@@ -5,6 +5,13 @@ from discord import Embed
 from discord.utils import get
 
 from commands.utils.sql_storage import *
+import logging
+
+LOG = logging.getLogger(__name__)
+LOG.setLevel(logging.DEBUG)
+handler = logging.StreamHandler()
+handler.setFormatter(logging.Formatter('%(asctime)s:[%(levelname)s]:[%(name)s]: %(message)s'))
+LOG.addHandler(handler)
 
 
 class Game(commands.Cog):
@@ -18,6 +25,7 @@ class Game(commands.Cog):
 
     @group.command(description='Регистрация в великолепное казино!')
     async def register(self, ctx):
+        LOG.info("Register user: %s", ctx.user.name)
         if game_register(ctx.user.id):
             await ctx.interaction.response.send_message("Успех!!", ephemeral=True, delete_after=15)
         else:
@@ -25,6 +33,7 @@ class Game(commands.Cog):
 
     @group.command(description='Выйти из казино!')
     async def unregister(self, ctx):
+        LOG.info("Unregister user: %s", ctx.user.name)
         if game_unregister(ctx.user.id):
             await ctx.interaction.response.send_message("До скорого!", ephemeral=True, delete_after=15)
         else:
@@ -32,6 +41,7 @@ class Game(commands.Cog):
 
     @group.command(description='Топ везунчиков')
     async def top(self, ctx, count: Option(str, required=False, default=10)):
+        LOG.info("Getting %s winners by user: %s", count, ctx.user.name)
         top_list = game_top(count)
         embed = Embed()
         embed.title = f'Топ {count} пидоров'
@@ -46,6 +56,7 @@ class Game(commands.Cog):
 
     @group.command(description='Играем?')
     async def roll(self, ctx):
+        LOG.info("Getting today winner by user: %s", ctx.user.name)
         roll, winner = game_roll()
         if winner == -1:
             await ctx.respond(f"**Пока никто не играет, ты можешь быть первым!**")
@@ -53,7 +64,7 @@ class Game(commands.Cog):
             if roll:
                 with open('./resources/config.yaml') as f:
                     config = yaml.load(f, Loader=yaml.FullLoader)
-                role = ctx.user.guild.get_role(config['game-role'])
+                role = get(ctx.guild.roles, id=config['game-role'])
                 for m in role.members:
                     await m.remove_roles(role)
                 winner = int(winner)
