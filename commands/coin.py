@@ -1,5 +1,12 @@
 from discord.ext import commands
 import random
+import logging
+
+LOG = logging.getLogger(__name__)
+LOG.setLevel(logging.DEBUG)
+handler = logging.StreamHandler()
+handler.setFormatter(logging.Formatter('%(asctime)s:[%(levelname)s]:[%(name)s]: %(message)s'))
+LOG.addHandler(handler)
 
 
 class Coin(commands.Cog):
@@ -15,6 +22,7 @@ class Coin(commands.Cog):
         description="Подбрось монетку и узнаешь свою судьбу!"
     )
     async def coin(self, ctx):
+        LOG.info("Throw coin by %s", ctx.user.name)
         coin_x = random.randint(0, 100)
         if coin_x <= 10:
             await ctx.respond("Монетка упала на ребро, перекидывай")

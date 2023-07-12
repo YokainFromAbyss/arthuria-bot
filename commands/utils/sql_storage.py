@@ -3,6 +3,13 @@ import psycopg2
 import yaml
 import random
 from dateutil.parser import *
+import logging
+
+LOG = logging.getLogger(__name__)
+LOG.setLevel(logging.DEBUG)
+handler = logging.StreamHandler()
+handler.setFormatter(logging.Formatter('%(asctime)s:[%(levelname)s]:[%(name)s]: %(message)s'))
+LOG.addHandler(handler)
 
 
 def connection():
@@ -12,10 +19,12 @@ def connection():
     conn = psycopg2.connect(dbname=config['dbname'], user=config['dbuser'],
                             password=config['dbpassword'], host=config['dbhost'])
     conn.autocommit = True
+    LOG.debug("Create connection for DB: %s, %s, %s", config['dbhost'], config['dbname'], config['dbuser'])
     return conn
 
 
 def last_news_pull():
+    LOG.debug("Getting last news date")
     last_pull = datetime.datetime.utcnow()
     with connection() as conn:
         with conn.cursor() as cursor:
@@ -28,10 +37,12 @@ def last_news_pull():
                 )
             else:
                 last_pull = parse(records[0][0])
+            LOG.debug("Last news date: %s", last_pull)
             return last_pull
 
 
 def update_news_pull(pull_date: datetime.datetime):
+    LOG.debug("Update last news date: %s", pull_date)
     with connection() as conn:
         with conn.cursor() as cursor:
             cursor.execute(
@@ -41,6 +52,7 @@ def update_news_pull(pull_date: datetime.datetime):
 
 
 def game_register(member_id: str):
+    LOG.debug("Register user: %s in day_game", member_id)
     with connection() as conn:
         with conn.cursor() as cursor:
             try:
@@ -56,6 +68,7 @@ def game_register(member_id: str):
 
 
 def game_unregister(member_id: str):
+    LOG.debug("Unregister user: %s in day_game", member_id)
     with connection() as conn:
         with conn.cursor() as cursor:
             try:
@@ -69,6 +82,7 @@ def game_unregister(member_id: str):
 
 
 def game_roll():
+    LOG.debug("Rolling day_game winner")
     today = datetime.datetime.utcnow().date()
     roll = False
     with connection() as conn:
@@ -102,17 +116,19 @@ def game_roll():
                     """,
                     [today, today]
                 )
-
+                LOG.debug("New winner: %s today", winner_id)
                 return roll, winner_id
     else:
         with connection() as conn:
             with conn.cursor() as cursor:
                 cursor.execute("SELECT member_id FROM day_game_list WHERE today_winner = true;")
                 res = cursor.fetchall()
+                LOG.debug("Secondary roll today")
                 return roll, res[0][0]
 
 
 def game_top(count: int):
+    LOG.debug("Getting %s winners in day_game", count)
     with connection() as conn:
         with conn.cursor() as cursor:
             cursor.execute(

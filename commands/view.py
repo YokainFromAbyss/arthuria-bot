@@ -5,6 +5,13 @@ from discord.ext.commands import has_permissions
 import io
 
 from commands.utils.selector import RoleSelection, SelectView
+import logging
+
+LOG = logging.getLogger(__name__)
+LOG.setLevel(logging.DEBUG)
+handler = logging.StreamHandler()
+handler.setFormatter(logging.Formatter('%(asctime)s:[%(levelname)s]:[%(name)s]: %(message)s'))
+LOG.addHandler(handler)
 
 
 def embed_creator(description, roles):
@@ -27,6 +34,7 @@ class View(commands.Cog):
     )
     @has_permissions(administrator=True)
     async def view(self, ctx):
+        LOG.info("Creating PePe roles selector by: %s", ctx.user.name)
         with io.open('./resources/pepe_roles_list.json', encoding='utf-8', mode='r') as f:
             ids = json.load(f)['roles']
             role_list = [item for item in ctx.guild.roles if item.id in ids]

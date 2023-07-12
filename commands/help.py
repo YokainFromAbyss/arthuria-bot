@@ -1,4 +1,11 @@
 from discord.ext import commands
+import logging
+
+LOG = logging.getLogger(__name__)
+LOG.setLevel(logging.DEBUG)
+handler = logging.StreamHandler()
+handler.setFormatter(logging.Formatter('%(asctime)s:[%(levelname)s]:[%(name)s]: %(message)s'))
+LOG.addHandler(handler)
 
 
 class Help(commands.Cog):
@@ -14,6 +21,7 @@ class Help(commands.Cog):
         description="Справочник команд."
     )
     async def help(self, ctx):
+        LOG.info("Using help by: %s", ctx.user.name)
         help_text = "```\n"
         for cog in self.bot.cogs:
             c = self.bot.cogs[cog]
