@@ -7,6 +7,7 @@ handler = logging.StreamHandler()
 handler.setFormatter(logging.Formatter('%(asctime)s:[%(levelname)s]:[%(name)s]: %(message)s'))
 LOG.addHandler(handler)
 
+
 class Help(commands.Cog):
     r"""
     Выводит список всех команд с описанием и документацией
