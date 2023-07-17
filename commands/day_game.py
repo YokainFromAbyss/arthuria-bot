@@ -25,22 +25,25 @@ class Game(commands.Cog):
 
     @group.command(description='Регистрация в великолепное казино!')
     async def register(self, ctx):
+        await ctx.interaction.response.defer(ephemeral=True)
         LOG.info("Register user: %s", ctx.user.name)
         if game_register(ctx.user.id):
-            await ctx.interaction.response.send_message("Успех!!", ephemeral=True, delete_after=15)
+            await ctx.interaction.followup.send("Успех!!", delete_after=15)
         else:
-            await ctx.interaction.response.send_message("Что-то сломалось, пинай одменов((", ephemeral=True, delete_after=15)
+            await ctx.interaction.followup.send("Что-то сломалось, пинай одменов((", delete_after=15)
 
     @group.command(description='Выйти из казино!')
     async def unregister(self, ctx):
+        await ctx.interaction.response.defer(ephemeral=True)
         LOG.info("Unregister user: %s", ctx.user.name)
         if game_unregister(ctx.user.id):
-            await ctx.interaction.response.send_message("До скорого!", ephemeral=True, delete_after=15)
+            await ctx.interaction.followup.send("До скорого!", delete_after=15)
         else:
-            await ctx.interaction.response.send_message("Что-то сломалось, пинай одменов((", ephemeral=True, delete_after=15)
+            await ctx.interaction.followup.send("Что-то сломалось, пинай одменов((", delete_after=15)
 
     @group.command(description='Топ везунчиков')
     async def top(self, ctx, count: Option(str, required=False, default=10)):
+        await ctx.interaction.response.defer()
         LOG.info("Getting %s winners by user: %s", count, ctx.user.name)
         top_list = game_top(count)
         embed = Embed()
@@ -56,6 +59,7 @@ class Game(commands.Cog):
 
     @group.command(description='Играем?')
     async def roll(self, ctx):
+        await ctx.interaction.response.defer()
         LOG.info("Getting today winner by user: %s", ctx.user.name)
         roll, winner = game_roll()
         if winner == -1:
