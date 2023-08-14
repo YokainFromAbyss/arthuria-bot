@@ -68,12 +68,13 @@ class Game(commands.Cog):
             if roll:
                 with open('./resources/config.yaml') as f:
                     config = yaml.load(f, Loader=yaml.FullLoader)
-                role = get(ctx.guild.roles, id=config['game-role'])
+                guild = ctx.guild
+                role = get(guild.roles, id=config['game-role'])
                 for m in role.members:
                     await m.remove_roles(role)
                 winner = int(winner)
-                user = get(self.bot.get_all_members(), id=winner)
-                await user.add_roles(role)
+                us = guild.get_member(winner)
+                await us.add_roles(role)
                 await ctx.respond(f"**Пидор дня <@{winner}>!**")
             else:
                 await ctx.respond(f"**Сегодня уже победил <@{winner}>**")
