@@ -25,6 +25,8 @@ class Help(commands.Cog):
         help_text = "```\n"
         for cog in self.bot.cogs:
             c = self.bot.cogs[cog]
+            if c.__doc__ is not None:
+                help_text += f"{c.__doc__}\n"
             for w in c.walk_commands():
                 help_text += "/"
                 if w.parent is None:
@@ -33,7 +35,7 @@ class Help(commands.Cog):
                     help_text += f"{w.parent} {w.name}\t\t"
                 help_text += f"{w.description}\n"
             if c.__doc__ is not None:
-                help_text += f"{c.__doc__}\n\n"
+                help_text += "\n_________________\n"
         help_text += "```"
         await ctx.interaction.response.send_message(help_text, ephemeral=True)
 
