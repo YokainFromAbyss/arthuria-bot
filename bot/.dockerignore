@@ -1,6 +1,6 @@
 Dockerfile
 README.md
-resources/*
+resources
 __pycache__
 .git
 docker-compose.yml

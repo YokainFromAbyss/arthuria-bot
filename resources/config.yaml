@@ -3,7 +3,7 @@ api-key: ""
 dbname: ""
 dbuser: ""
 dbpassword: ""
-dbhost: ""
+dbhost: "arthuria-db" # не меняй, сломается
 registration:
   channel: 1050035651833245806
   safe-user: 828261204387823666

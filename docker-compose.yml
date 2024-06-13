@@ -1,0 +1,22 @@
+services:
+  arthuria-bot:
+    container_name: arthuria_bot
+    image: arthuria-bot
+    volumes:
+    # This is path to full config folder. You need to create all required files before starting container.
+      - /path/to/config:/app/resources
+    depends_on:
+      - arthuria-db
+
+  arthuria-db:
+    container_name: arthuria-db
+    image: postgres:12.18-bookworm
+    volumes:
+      # Path to persist postgresql data over time. Use bind mount or volume as needed.
+      - /path/to/database:/var/lib/postgresql/data
+      # This path is needed only for first start to populate db with required tables. Can be deleted afterwards.
+      - /path/to/sqlinit.sql:/docker-entrypoint-initdb.d/init.sql:ro
+    environment:
+      - POSTGRES_USER=
+      - POSTGRES_PASSWORD=
+      - POSTGRES_DB=
