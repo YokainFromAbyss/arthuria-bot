@@ -1,7 +1,7 @@
 services:
   arthuria-bot:
     container_name: arthuria_bot
-    image: arthuria-bot
+    image: ghcr.io/YokainFromAbyss/arthuria-bot:main
     volumes:
     # This is path to full config folder. You need to create all required files before starting container.
       - /path/to/config:/app/resources
@@ -10,7 +10,7 @@ services:
 
   arthuria-db:
     container_name: arthuria-db
-    image: postgres:12.18-bookworm
+    image: postgres:12.18-alpine3.19
     volumes:
       # Path to persist postgresql data over time. Use bind mount or volume as needed.
       - /path/to/database:/var/lib/postgresql/data
