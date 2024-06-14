@@ -1,6 +1,2 @@
+.dockerignore
 Dockerfile
-README.md
-resources
-__pycache__
-.git
-docker-compose.yml
