@@ -29,6 +29,8 @@ class Background(commands.Cog):
             "DnD",
             "хентай пазлы",
             "Срачи с Мерси",
+            "4 этап грани",
+            "Genshin impact"
         ]
         self.status.add_exception_type(Exception)
         self.status.start()
